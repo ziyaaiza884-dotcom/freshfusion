@@ -1,0 +1,686 @@
+import type { Category, Dietary, Product } from "./types";
+
+type Seed = {
+  name: string;
+  category: Category;
+  dietary: Dietary;
+  price: number;
+  weight: number;
+  unit?: "g" | "ml";
+  blurb: string;
+  description: string;
+  ingredients: string[];
+  allergens?: string[];
+  inStock?: boolean;
+  isHot?: boolean;
+  isNew?: boolean;
+  isBestSeller?: boolean;
+  rating: number;
+  reviewCount: number;
+  madeOn: string;
+  art: string;
+  related?: string[];
+};
+
+const slugify = (name: string) =>
+  name
+    .toLowerCase()
+    .replace(/\([^)]*\)/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+
+const seeds: Seed[] = [
+  // ---------------------------- PICKLES ----------------------------
+  {
+    name: "Beef Pickle",
+    category: "pickles",
+    dietary: "nonveg",
+    price: 320,
+    weight: 250,
+    blurb: "Slow-cooked beef in a dark, peppery masala.",
+    description:
+      "Tender cubes of beef braised low and slow, then folded into a dark roasted masala of black pepper, garlic and curry leaf. Matured in cold-pressed sesame oil for a deep, unmistakably home-kitchen flavour.",
+    ingredients: [
+      "Beef",
+      "Sesame oil",
+      "Black pepper",
+      "Garlic",
+      "Ginger",
+      "Curry leaves",
+      "Kashmiri chilli",
+      "Vinegar",
+      "Salt",
+    ],
+    isHot: true,
+    isBestSeller: true,
+    rating: 4.8,
+    reviewCount: 214,
+    madeOn: "2026-09-01",
+    art: "from-[#5b2b1e] to-[#8c3d21]",
+    related: ["fish-pickle", "garlic-pickle", "ready-to-cook-gravies"],
+  },
+  {
+    name: "Fish Pickle",
+    category: "pickles",
+    dietary: "nonveg",
+    price: 340,
+    weight: 250,
+    blurb: "Firm fish chunks, tangy and fiery.",
+    description:
+      "Meaty fish pieces shallow-fried till golden and set in a bright, tangy pickle masala with plenty of ginger and green chilli. Coastal kitchen classic.",
+    ingredients: [
+      "Fish",
+      "Sesame oil",
+      "Ginger",
+      "Garlic",
+      "Green chilli",
+      "Fenugreek",
+      "Turmeric",
+      "Chilli powder",
+      "Vinegar",
+      "Salt",
+    ],
+    isHot: true,
+    isBestSeller: true,
+    rating: 4.7,
+    reviewCount: 176,
+    madeOn: "2026-09-02",
+    art: "from-[#7a5a1e] to-[#b8862f]",
+    related: ["beef-pickle", "green-chilli-pickle", "irimpampuli-pickle"],
+  },
+  {
+    name: "Veg Mix Pickle",
+    category: "pickles",
+    dietary: "veg",
+    price: 220,
+    weight: 300,
+    blurb: "Carrot, gooseberry, lime and green chilli together.",
+    description:
+      "A crunchy medley of carrot, gooseberry, lime and green chilli in a mustard-tempered oil base. The all-rounder jar for everyday meals.",
+    ingredients: [
+      "Carrot",
+      "Gooseberry",
+      "Lime",
+      "Green chilli",
+      "Sesame oil",
+      "Mustard",
+      "Asafoetida",
+      "Chilli powder",
+      "Salt",
+    ],
+    isBestSeller: true,
+    rating: 4.5,
+    reviewCount: 132,
+    madeOn: "2026-09-03",
+    art: "from-[#3f6b4c] to-[#6f9c52]",
+    related: ["lemon-pickle", "garlic-pickle", "cut-mango-pickle"],
+  },
+  {
+    name: "Green Chilli Pickle",
+    category: "pickles",
+    dietary: "veg",
+    price: 190,
+    weight: 250,
+    blurb: "Whole green chillies, sharp and salty.",
+    description:
+      "Plump green chillies split and packed with a coarse mustard-fennel rub, then cured in oil. Bright heat that lifts curd rice and parathas.",
+    ingredients: [
+      "Green chilli",
+      "Mustard",
+      "Fennel",
+      "Fenugreek",
+      "Turmeric",
+      "Mustard oil",
+      "Salt",
+    ],
+    isHot: true,
+    rating: 4.4,
+    reviewCount: 88,
+    madeOn: "2026-09-02",
+    art: "from-[#2e5138] to-[#5f8f3f]",
+    related: ["lemon-pickle", "garlic-pickle", "veg-mix-pickle"],
+  },
+  {
+    name: "Lemon Pickle",
+    category: "pickles",
+    dietary: "veg",
+    price: 180,
+    weight: 300,
+    blurb: "Sun-softened lemon, sweet-sour-salty.",
+    description:
+      "Whole lemons quartered, salted and left to soften in the sun for weeks before a warm chilli-jaggery masala goes in. Mellow, jammy, endlessly comforting.",
+    ingredients: [
+      "Lemon",
+      "Rock salt",
+      "Jaggery",
+      "Chilli powder",
+      "Fenugreek",
+      "Asafoetida",
+      "Sesame oil",
+    ],
+    isBestSeller: true,
+    rating: 4.6,
+    reviewCount: 240,
+    madeOn: "2026-08-20",
+    art: "from-[#c9a227] to-[#e6c84f]",
+    related: ["baby-mango-pickle", "cut-mango-pickle", "veg-mix-pickle"],
+  },
+  {
+    name: "Baby Mango Pickle (Kanni Mango)",
+    category: "pickles",
+    dietary: "veg",
+    price: 260,
+    weight: 300,
+    blurb: "Whole tender baby mangoes in brine and oil.",
+    description:
+      "Kanni maanga — tiny whole mangoes picked young, brined till they turn glassy, then dressed in a fiery chilli-fenugreek oil. Bite the whole thing, seed and all.",
+    ingredients: [
+      "Baby mango",
+      "Rock salt",
+      "Kashmiri chilli",
+      "Fenugreek",
+      "Mustard",
+      "Turmeric",
+      "Sesame oil",
+    ],
+    isHot: true,
+    isNew: true,
+    rating: 4.7,
+    reviewCount: 61,
+    madeOn: "2026-09-04",
+    art: "from-[#4c6b1e] to-[#89a83b]",
+    related: ["cut-mango-pickle", "lemon-pickle", "irimpampuli-pickle"],
+  },
+  {
+    name: "Cut Mango Pickle",
+    category: "pickles",
+    dietary: "veg",
+    price: 230,
+    weight: 300,
+    blurb: "Raw mango cubes, instant and punchy.",
+    description:
+      "Firm raw-mango cubes tossed fresh with chilli, mustard and warm oil. Ready the day it is made — sharp, sour and crunchy.",
+    ingredients: [
+      "Raw mango",
+      "Chilli powder",
+      "Mustard",
+      "Fenugreek",
+      "Asafoetida",
+      "Turmeric",
+      "Sesame oil",
+      "Salt",
+    ],
+    isBestSeller: true,
+    rating: 4.5,
+    reviewCount: 149,
+    madeOn: "2026-09-05",
+    art: "from-[#b5892b] to-[#d8b24a]",
+    related: ["baby-mango-pickle", "lemon-pickle", "veg-mix-pickle"],
+  },
+  {
+    name: "Garlic Pickle",
+    category: "pickles",
+    dietary: "veg",
+    price: 210,
+    weight: 250,
+    blurb: "Whole peeled cloves, mellow and rich.",
+    description:
+      "Peeled garlic cloves simmered gently till they lose their bite, then soaked in a tamarind-chilli gravy. Turns sweet and almost buttery with age.",
+    ingredients: [
+      "Garlic",
+      "Tamarind",
+      "Chilli powder",
+      "Jaggery",
+      "Fenugreek",
+      "Mustard",
+      "Sesame oil",
+      "Salt",
+    ],
+    rating: 4.6,
+    reviewCount: 118,
+    madeOn: "2026-08-28",
+    art: "from-[#6f6557] to-[#a89a82]",
+    related: ["beef-pickle", "green-chilli-pickle", "veg-mix-pickle"],
+  },
+  {
+    name: "Irimpampuli Pickle (Tamarind)",
+    category: "pickles",
+    dietary: "veg",
+    price: 200,
+    weight: 300,
+    blurb: "Wild tamarind fruit, deeply sour.",
+    description:
+      "Irimpampuli — the small wild tamarind — cured whole in salt and chilli oil for a bracing, mouth-puckering sourness. A regional favourite that is hard to find outside home kitchens.",
+    ingredients: [
+      "Wild tamarind (irimpampuli)",
+      "Rock salt",
+      "Chilli powder",
+      "Fenugreek",
+      "Mustard",
+      "Sesame oil",
+    ],
+    isNew: true,
+    rating: 4.3,
+    reviewCount: 34,
+    madeOn: "2026-09-03",
+    art: "from-[#4a3520] to-[#7c5a32]",
+    related: ["baby-mango-pickle", "cut-mango-pickle", "fish-pickle"],
+  },
+  {
+    name: "Pineapple Pickle",
+    category: "pickles",
+    dietary: "veg",
+    price: 240,
+    weight: 300,
+    blurb: "Sweet-hot pineapple, gingery finish.",
+    description:
+      "Ripe pineapple chunks cooked briefly with ginger, green chilli and a little jaggery so they stay juicy. Sweet up front, warm on the finish.",
+    ingredients: [
+      "Pineapple",
+      "Ginger",
+      "Green chilli",
+      "Jaggery",
+      "Mustard",
+      "Vinegar",
+      "Sesame oil",
+      "Salt",
+    ],
+    isNew: true,
+    rating: 4.5,
+    reviewCount: 52,
+    madeOn: "2026-09-04",
+    art: "from-[#d69b1f] to-[#efc743]",
+    related: ["cut-mango-pickle", "lemon-pickle", "home-made-chutneys"],
+  },
+  {
+    name: "Cashew Nut Pieces (in Oil)",
+    category: "pickles",
+    dietary: "veg",
+    price: 380,
+    weight: 200,
+    blurb: "Roasted cashew pieces in a mild pickle oil.",
+    description:
+      "Broken cashew pieces lightly roasted and folded into a gentle chilli-curry-leaf oil. A rich, snackable add-on jar rather than a fiery pickle.",
+    ingredients: [
+      "Cashew nut",
+      "Sesame oil",
+      "Curry leaves",
+      "Kashmiri chilli",
+      "Garlic",
+      "Salt",
+    ],
+    allergens: ["Tree nuts (cashew)"],
+    rating: 4.4,
+    reviewCount: 40,
+    madeOn: "2026-08-30",
+    art: "from-[#b98a4b] to-[#d8b57e]",
+    related: ["dry-raisin-jar", "home-made-chutneys", "garlic-pickle"],
+  },
+  {
+    name: "Dry Raisin Jar",
+    category: "pickles",
+    dietary: "veg",
+    price: 260,
+    weight: 200,
+    blurb: "Plump golden raisins, ready to snack or cook.",
+    description:
+      "Sun-dried golden raisins, cleaned and lightly oiled so they stay soft. Stir into pulao and payasam, or eat straight from the jar.",
+    ingredients: ["Golden raisins", "A trace of sunflower oil"],
+    rating: 4.5,
+    reviewCount: 47,
+    madeOn: "2026-08-25",
+    art: "from-[#7a5c2e] to-[#a9863f]",
+    related: ["cashew-nut-pieces-in-oil", "dry-raisin-pack", "cashew-nut-pack"],
+  },
+
+  // ---------------------------- SPICES ----------------------------
+  {
+    name: "Black Pepper",
+    category: "spices",
+    dietary: "veg",
+    price: 150,
+    weight: 100,
+    unit: "g",
+    blurb: "Bold, resinous Wayanad peppercorns.",
+    description:
+      "Vine-ripened black pepper from the hills, sun-dried and hand-sorted. Big, wrinkled corns with a slow, warming heat.",
+    ingredients: ["Whole black peppercorns"],
+    isBestSeller: true,
+    rating: 4.8,
+    reviewCount: 190,
+    madeOn: "2026-08-18",
+    art: "from-[#2b2620] to-[#4a4238]",
+    related: ["cardamom", "cloves", "cinnamon"],
+  },
+  {
+    name: "Cardamom",
+    category: "spices",
+    dietary: "veg",
+    price: 320,
+    weight: 50,
+    unit: "g",
+    blurb: "Green pods, intensely aromatic.",
+    description:
+      "Plump green cardamom pods, freshly graded. Crack one open for tea, biryani or payasam and the whole kitchen knows.",
+    ingredients: ["Whole green cardamom pods"],
+    isBestSeller: true,
+    rating: 4.7,
+    reviewCount: 143,
+    madeOn: "2026-08-15",
+    art: "from-[#3f6b4c] to-[#7aa85f]",
+    related: ["cloves", "cinnamon", "fennel-seed"],
+  },
+  {
+    name: "Cloves",
+    category: "spices",
+    dietary: "veg",
+    price: 180,
+    weight: 50,
+    unit: "g",
+    blurb: "Whole cloves, sharp and sweet.",
+    description:
+      "Hand-picked cloves dried with the heads intact, oily and fragrant. A little goes a long way in garam masala and rice.",
+    ingredients: ["Whole cloves"],
+    rating: 4.6,
+    reviewCount: 96,
+    madeOn: "2026-08-15",
+    art: "from-[#5a3620] to-[#8a5333]",
+    related: ["cinnamon", "cardamom", "black-pepper"],
+  },
+  {
+    name: "Cinnamon",
+    category: "spices",
+    dietary: "veg",
+    price: 140,
+    weight: 100,
+    unit: "g",
+    blurb: "True cinnamon quills, delicate and sweet.",
+    description:
+      "Soft, papery quills of true cinnamon that crumble easily — sweeter and more floral than cassia. Snap into curries or steep for tea.",
+    ingredients: ["Cinnamon bark quills"],
+    rating: 4.6,
+    reviewCount: 110,
+    madeOn: "2026-08-16",
+    art: "from-[#7a4a25] to-[#a9702f]",
+    related: ["cloves", "cardamom", "fennel-seed"],
+  },
+  {
+    name: "Cumin Seed",
+    category: "spices",
+    dietary: "veg",
+    price: 90,
+    weight: 100,
+    unit: "g",
+    blurb: "Earthy jeera for tempering.",
+    description:
+      "Clean, plump cumin seed with a strong earthy aroma. Bloom in hot oil to start almost any dish.",
+    ingredients: ["Whole cumin seeds"],
+    isBestSeller: true,
+    rating: 4.5,
+    reviewCount: 128,
+    madeOn: "2026-08-19",
+    art: "from-[#6f5a2e] to-[#9c8244]",
+    related: ["fennel-seed", "mustard", "fenugreek"],
+  },
+  {
+    name: "Fennel Seed",
+    category: "spices",
+    dietary: "veg",
+    price: 100,
+    weight: 100,
+    unit: "g",
+    blurb: "Sweet perumjeerakam, cooling.",
+    description:
+      "Bright green fennel seed with a sweet, anise-like note. For meat masalas, spice blends and an after-meal chew.",
+    ingredients: ["Whole fennel seeds"],
+    rating: 4.5,
+    reviewCount: 74,
+    madeOn: "2026-08-19",
+    art: "from-[#4c6b3a] to-[#82a758]",
+    related: ["cumin-seed", "cardamom", "cinnamon"],
+  },
+  {
+    name: "Fenugreek",
+    category: "spices",
+    dietary: "veg",
+    price: 80,
+    weight: 100,
+    unit: "g",
+    blurb: "Bitter-sweet methi seed.",
+    description:
+      "Hard little methi seeds that turn nutty and slightly bitter when roasted. Essential for pickle masalas and fish curries.",
+    ingredients: ["Whole fenugreek seeds"],
+    rating: 4.4,
+    reviewCount: 58,
+    madeOn: "2026-08-17",
+    art: "from-[#8a6a2a] to-[#b89142]",
+    related: ["mustard", "cumin-seed", "fennel-seed"],
+  },
+  {
+    name: "Mustard",
+    category: "spices",
+    dietary: "veg",
+    price: 70,
+    weight: 100,
+    unit: "g",
+    blurb: "Small black mustard for the pan.",
+    description:
+      "Tiny black mustard seeds that pop and turn nutty in hot oil. The first sound of a South Indian tempering.",
+    ingredients: ["Whole black mustard seeds"],
+    rating: 4.5,
+    reviewCount: 81,
+    madeOn: "2026-08-17",
+    art: "from-[#3a3226] to-[#5f5340]",
+    related: ["cumin-seed", "fenugreek", "round-chilli"],
+  },
+  {
+    name: "Dry Long Chilli",
+    category: "spices",
+    dietary: "veg",
+    price: 130,
+    weight: 100,
+    unit: "g",
+    blurb: "Long red chillies, moderate heat.",
+    description:
+      "Slender sun-dried red chillies with deep colour and a rounded, not-too-sharp heat. Fry whole or grind for masala.",
+    ingredients: ["Whole dried long red chillies"],
+    isHot: true,
+    rating: 4.4,
+    reviewCount: 63,
+    madeOn: "2026-08-20",
+    art: "from-[#7a1f1a] to-[#b5342a]",
+    related: ["round-chilli", "black-pepper", "mustard"],
+  },
+  {
+    name: "Round Chilli",
+    category: "spices",
+    dietary: "veg",
+    price: 150,
+    weight: 100,
+    unit: "g",
+    blurb: "Fat round chillies, serious heat.",
+    description:
+      "Squat, thick-walled round chillies (kanthari-style) dried whole. Fierce heat and a fruity edge — use with respect.",
+    ingredients: ["Whole dried round chillies"],
+    isHot: true,
+    rating: 4.5,
+    reviewCount: 55,
+    madeOn: "2026-08-20",
+    art: "from-[#8a1f16] to-[#c23a2a]",
+    related: ["dry-long-chilli", "black-pepper", "green-chilli-pickle"],
+  },
+  {
+    name: "Cashew Nut Pack",
+    category: "spices",
+    dietary: "veg",
+    price: 420,
+    weight: 250,
+    unit: "g",
+    blurb: "Whole W240 cashews for cooking.",
+    description:
+      "Grade W240 whole cashews, creamy and even. For grinding into gravies, garnishing rice or roasting with ghee.",
+    ingredients: ["Whole cashew nuts"],
+    allergens: ["Tree nuts (cashew)"],
+    isNew: true,
+    rating: 4.7,
+    reviewCount: 42,
+    madeOn: "2026-08-22",
+    art: "from-[#c2a06a] to-[#e0c496]",
+    related: ["dry-raisin-pack", "cardamom", "cashew-nut-pieces-in-oil"],
+  },
+  {
+    name: "Dry Raisin Pack",
+    category: "spices",
+    dietary: "veg",
+    price: 240,
+    weight: 250,
+    unit: "g",
+    blurb: "Cooking raisins for pulao and sweets.",
+    description:
+      "Golden seedless raisins in a resealable kitchen pack. Soft enough to plump quickly in warm ghee.",
+    ingredients: ["Seedless golden raisins"],
+    rating: 4.5,
+    reviewCount: 38,
+    madeOn: "2026-08-22",
+    art: "from-[#8a6a34] to-[#b8944a]",
+    related: ["cashew-nut-pack", "cardamom", "dry-raisin-jar"],
+  },
+
+  // --------------------------- SPECIALTY ---------------------------
+  {
+    name: "Home-made Chutneys",
+    category: "specialty",
+    dietary: "veg",
+    price: 190,
+    weight: 200,
+    blurb: "Rotating batch — coconut, tomato or coriander-mint.",
+    description:
+      "A weekly-changing chutney made in small batches: coconut, tomato-garlic or coriander-mint depending on what is fresh. Note your preference at checkout and we pack what is best that day.",
+    ingredients: [
+      "Fresh coconut or tomato or coriander-mint (seasonal)",
+      "Green chilli",
+      "Ginger",
+      "Curry leaves",
+      "Mustard",
+      "Sesame oil",
+      "Salt",
+    ],
+    isNew: true,
+    rating: 4.6,
+    reviewCount: 29,
+    madeOn: "2026-09-05",
+    art: "from-[#3f6b4c] to-[#8aa85f]",
+    related: ["threshold-masala-mixes", "ready-to-cook-gravies", "pineapple-pickle"],
+  },
+  {
+    name: "Threshold Masala Mixes",
+    category: "specialty",
+    dietary: "veg",
+    price: 220,
+    weight: 150,
+    unit: "g",
+    blurb: "Small-batch ground blends for meat, fish and veg.",
+    description:
+      "House masala blends roasted and stone-ground in small batches — a meat masala, a fish masala and a sambar-style veg masala. No fillers, no colour, ground the week you order.",
+    ingredients: [
+      "Coriander",
+      "Dry red chilli",
+      "Black pepper",
+      "Fennel",
+      "Cumin",
+      "Cloves",
+      "Cardamom",
+      "Cinnamon",
+      "Turmeric",
+    ],
+    isBestSeller: true,
+    rating: 4.7,
+    reviewCount: 66,
+    madeOn: "2026-09-01",
+    art: "from-[#7a4a25] to-[#b5732f]",
+    related: ["home-made-chutneys", "ready-to-cook-gravies", "black-pepper"],
+  },
+  {
+    name: "Ready-to-cook Gravies",
+    category: "specialty",
+    dietary: "nonveg",
+    price: 260,
+    weight: 300,
+    blurb: "Finished base gravy — just add your protein.",
+    description:
+      "A fully cooked onion-tomato-coconut base, portioned and chilled. Simmer with chicken, egg, paneer or vegetables and dinner is ten minutes away.",
+    ingredients: [
+      "Onion",
+      "Tomato",
+      "Coconut",
+      "Ginger",
+      "Garlic",
+      "Green chilli",
+      "House meat masala",
+      "Coconut oil",
+      "Curry leaves",
+      "Salt",
+    ],
+    isHot: true,
+    isNew: true,
+    rating: 4.5,
+    reviewCount: 31,
+    madeOn: "2026-09-05",
+    art: "from-[#8a3d1f] to-[#c25f2c]",
+    related: ["threshold-masala-mixes", "home-made-chutneys", "beef-pickle"],
+  },
+];
+
+export const products: Product[] = seeds.map((s) => ({
+  id: slugify(s.name),
+  slug: slugify(s.name),
+  name: s.name,
+  category: s.category,
+  dietary: s.dietary,
+  price: s.price,
+  weight: s.weight,
+  unit: s.unit ?? "g",
+  blurb: s.blurb,
+  description: s.description,
+  ingredients: s.ingredients,
+  allergens: s.allergens ?? [],
+  inStock: s.inStock ?? true,
+  isHot: s.isHot ?? false,
+  isNew: s.isNew ?? false,
+  isBestSeller: s.isBestSeller ?? false,
+  rating: s.rating,
+  reviewCount: s.reviewCount,
+  madeOn: s.madeOn,
+  art: s.art,
+  related: s.related ?? [],
+}));
+
+// A couple of items intentionally out of stock to exercise the UI.
+for (const slug of ["irimpampuli-pickle", "round-chilli"]) {
+  const p = products.find((x) => x.slug === slug);
+  if (p) p.inStock = false;
+}
+
+export const getProduct = (slug: string) =>
+  products.find((p) => p.slug === slug);
+
+export const getRelated = (slug: string): Product[] => {
+  const p = getProduct(slug);
+  if (!p) return [];
+  const picks = p.related
+    .map((r) => getProduct(r))
+    .filter((x): x is Product => Boolean(x));
+  if (picks.length >= 3) return picks.slice(0, 4);
+  const fillers = products.filter(
+    (x) => x.slug !== slug && x.category === p.category && !picks.includes(x),
+  );
+  return [...picks, ...fillers].slice(0, 4);
+};
+
+export const bestSellers = () => products.filter((p) => p.isBestSeller);
+export const newArrivals = () => products.filter((p) => p.isNew);
+
+export const PRICE_BOUNDS = {
+  min: Math.min(...products.map((p) => p.price)),
+  max: Math.max(...products.map((p) => p.price)),
+};
