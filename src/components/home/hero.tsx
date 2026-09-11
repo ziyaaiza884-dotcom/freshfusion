@@ -20,8 +20,15 @@ const jars = [
     category: "pickles" as const,
     delay: 0,
     photo: "/images/4suares/pickle.png",
+    alt: "Fresh Fusion beef pickle jar",
   },
-  { art: "from-[#c9a227] to-[#e6c84f]", category: "pickles" as const, delay: 0.08 },
+  {
+    art: "from-[#c9a227] to-[#e6c84f]",
+    category: "spices" as const,
+    delay: 0.08,
+    photo: "/images/4suares/seeds-square.jpg",
+    alt: "Whole Kerala spices — cloves and cinnamon in bowls",
+  },
   { art: "from-[#3f6b4c] to-[#7aa85f]", category: "spices" as const, delay: 0.16 },
   { art: "from-[#8a3d1f] to-[#c25f2c]", category: "specialty" as const, delay: 0.24 },
 ];
@@ -136,7 +143,7 @@ export function Hero() {
               {j.photo ? (
                 <Image
                   src={j.photo}
-                  alt="Fresh Fusion beef pickle jar"
+                  alt={j.alt ?? "Fresh Fusion product"}
                   width={300}
                   height={300}
                   className="h-full w-full rounded-2xl object-cover"
