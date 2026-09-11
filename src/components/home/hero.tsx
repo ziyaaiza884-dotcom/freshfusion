@@ -6,6 +6,7 @@ import { ArrowRight } from "lucide-react";
 import { ButtonLink } from "@/components/ui/button";
 import { easeOutExpo } from "@/components/ui/motion";
 import { ProductArt } from "@/components/product-art";
+import { KeralaScene } from "@/components/kerala-scene";
 
 const chips = [
   { label: "All pickles", href: "/shop?category=pickles" },
@@ -22,11 +23,20 @@ const jars = [
 
 export function Hero() {
   return (
-    <section className="relative overflow-hidden">
+    <section className="relative isolate overflow-hidden">
       <div
         aria-hidden
-        className="absolute inset-0 -z-10 bg-gradient-to-b from-surface-muted/70 via-background to-background"
+        className="absolute inset-0 -z-20 bg-gradient-to-b from-surface-muted/70 via-background to-background"
       />
+      <motion.div
+        aria-hidden
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1.2, delay: 0.1 }}
+        className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-40 sm:h-56 lg:h-64"
+      >
+        <KeralaScene className="absolute bottom-0 h-full" />
+      </motion.div>
       <div className="mx-auto grid max-w-6xl items-center gap-12 px-4 py-16 sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:py-24">
         <div>
           <motion.p
