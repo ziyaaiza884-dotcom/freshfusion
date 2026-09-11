@@ -1,27 +1,27 @@
 @import "tailwindcss";
 
 /* ------------------------------------------------------------------ */
-/*  Fresh Fusion — "spice merchant's pantry at dusk"                  */
-/*  warm dark ink · ghee gold · chilli red · lamplight glow           */
+/*  Fresh Fusion — Kerala mural evening: teak-wood semi-dark, kasavu  */
+/*  gold border, temple-mural gold/maroon/palm-green triad             */
 /* ------------------------------------------------------------------ */
 
 :root {
-  --background: #17130f; /* warm near-black, like cast iron */
-  --surface: #221b14; /* jar-shelf brown-black */
-  --surface-muted: #2b2318;
-  --foreground: #f3e9d8; /* turmeric-stained parchment */
-  --muted-foreground: #ab9c84;
-  --border: #3c3122;
+  --background: #2a2015; /* deep teak wood, not black */
+  --surface: #362a1a; /* rosewood card surface */
+  --surface-muted: #423323;
+  --foreground: #f6ecd8; /* kasavu cream */
+  --muted-foreground: #c7b08b;
+  --border: #4f3f28; /* warm bronze border, kasavu-zari adjacent */
 
-  --primary: #c9932f; /* ghee gold */
-  --primary-strong: #dba847; /* brighter on hover, dark bg needs lift not shade */
-  --primary-foreground: #1b140b;
+  --primary: #c99a2e; /* temple-mural gold / turmeric */
+  --primary-strong: #dcae45;
+  --primary-foreground: #251a0c;
 
-  --accent: #d1452c; /* dried-chilli red */
-  --accent-foreground: #fdf3e7;
-  --spice: #c97a3d; /* paprika/cinnamon */
+  --accent: #a83a2a; /* mural maroon-red */
+  --accent-foreground: #fbf1e2;
+  --spice: #4c7a45; /* paddy-field / palm green */
 
-  --ring: #c9932f;
+  --ring: #c99a2e;
   --radius: 0.75rem;
 
   /* signature lamplight glow, derived per-theme from --primary */

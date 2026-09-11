@@ -21,7 +21,7 @@ export function Header() {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border/70 bg-background/85 backdrop-blur-md">
+    <header className="sticky top-0 z-50 border-b border-border/70 bg-background/85 backdrop-blur-md after:absolute after:inset-x-0 after:bottom-[-2px] after:h-[2px] after:bg-gradient-to-r after:from-transparent after:via-primary after:to-transparent after:opacity-70 relative">
       <div className="mx-auto flex h-16 max-w-6xl items-center gap-4 px-4 sm:px-6">
         <Link
           href="/"
