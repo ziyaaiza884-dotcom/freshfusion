@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { MessageCircle, Phone, Sprout } from "lucide-react";
+import Image from "next/image";
+import { MessageCircle, Phone } from "lucide-react";
 import {
   CONTACT_PHONE_DISPLAY,
   CONTACT_PHONE_TEL,
@@ -12,9 +13,13 @@ export function Footer() {
       <div className="mx-auto grid max-w-6xl gap-8 px-4 py-12 sm:grid-cols-2 sm:px-6 lg:grid-cols-4">
         <div>
           <div className="flex items-center gap-2 font-serif text-lg font-bold text-primary-strong">
-            <span className="grid h-8 w-8 place-items-center rounded-full bg-primary text-primary-foreground">
-              <Sprout className="h-4 w-4" />
-            </span>
+            <Image
+              src="/images/logo.jpeg"
+              alt="Fresh Fusion Spices & Pickles"
+              width={32}
+              height={32}
+              className="h-8 w-8 shrink-0 rounded-full object-cover"
+            />
             Fresh Fusion
           </div>
           <p className="mt-3 max-w-xs text-sm text-muted-foreground">

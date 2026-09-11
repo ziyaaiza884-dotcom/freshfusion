@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
-import { Menu, ShoppingBag, Sprout, X } from "lucide-react";
+import { Menu, ShoppingBag, X } from "lucide-react";
 import { useState } from "react";
 import { useCart } from "@/context/cart-context";
 import { cn } from "@/lib/utils";
@@ -27,9 +28,13 @@ export function Header() {
           href="/"
           className="flex items-center gap-2 font-serif text-lg font-bold text-primary-strong"
         >
-          <span className="grid h-9 w-9 place-items-center rounded-full bg-primary text-primary-foreground">
-            <Sprout className="h-5 w-5" />
-          </span>
+          <Image
+            src="/images/logo.jpeg"
+            alt="Fresh Fusion Spices & Pickles"
+            width={36}
+            height={36}
+            className="h-9 w-9 shrink-0 rounded-full object-cover"
+          />
           Fresh&nbsp;Fusion
         </Link>
 
