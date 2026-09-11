@@ -1,12 +1,12 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { ButtonLink } from "@/components/ui/button";
 import { easeOutExpo } from "@/components/ui/motion";
 import { ProductArt } from "@/components/product-art";
-import { KeralaScene } from "@/components/kerala-scene";
 
 const chips = [
   { label: "All pickles", href: "/shop?category=pickles" },
@@ -24,19 +24,26 @@ const jars = [
 export function Hero() {
   return (
     <section className="relative isolate overflow-hidden">
+      <div className="absolute inset-0 -z-30">
+        <Image
+          src="/images/kerala-hero.jpg"
+          alt="Kerala backwaters at dusk — a kettuvallam houseboat gliding past palm-lined banks"
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover object-[center_58%]"
+        />
+      </div>
+      {/* scrim: strong under the copy, lighter toward the jars, and fading to
+          the page background at the top/bottom edges so the photo settles in */}
       <div
         aria-hidden
-        className="absolute inset-0 -z-20 bg-gradient-to-b from-surface-muted/70 via-background to-background"
+        className="absolute inset-0 -z-20 bg-gradient-to-r from-background from-15% via-background/75 via-50% to-background/30"
       />
-      <motion.div
+      <div
         aria-hidden
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1.2, delay: 0.1 }}
-        className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-40 sm:h-56 lg:h-64"
-      >
-        <KeralaScene className="absolute bottom-0 h-full" />
-      </motion.div>
+        className="absolute inset-0 -z-20 bg-gradient-to-t from-background via-background/25 to-background/70"
+      />
       <div className="mx-auto grid max-w-6xl items-center gap-12 px-4 py-16 sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:py-24">
         <div>
           <motion.p
