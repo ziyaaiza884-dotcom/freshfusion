@@ -7,7 +7,6 @@ import { motion } from "framer-motion";
 import {
   Banknote,
   CreditCard,
-  Gift,
   Loader2,
   Smartphone,
   Wallet,
@@ -26,7 +25,7 @@ import {
 import { ProductArt } from "@/components/product-art";
 import { getProduct } from "@/data/catalog";
 import { Button, ButtonLink } from "@/components/ui/button";
-import { Input, Textarea } from "@/components/ui/input";
+import { Input } from "@/components/ui/input";
 import { CartSummary } from "@/components/cart/cart-summary";
 import { ProductGridSkeleton } from "@/components/product-grid";
 import { MockRazorpayModal } from "@/components/checkout/mock-razorpay-modal";
@@ -41,16 +40,41 @@ type PaymentIntent =
     };
 
 const PAYMENTS = [
-  { id: "upi", label: "UPI", icon: Smartphone, hint: "GPay · PhonePe · Paytm" },
-  { id: "card", label: "Card", icon: CreditCard, hint: "Visa · Mastercard · RuPay" },
-  { id: "wallet", label: "Wallet", icon: Wallet, hint: "Paytm · Amazon Pay" },
-  { id: "cod", label: "Cash on delivery", icon: Banknote, hint: "Pay the rider" },
+  {
+    id: "upi",
+    label: "UPI",
+    icon: Smartphone,
+    hint: "GPay · PhonePe · Paytm",
+    disabled: false,
+  },
+  {
+    id: "card",
+    label: "Card",
+    icon: CreditCard,
+    hint: "Visa · Mastercard · RuPay",
+    disabled: true,
+  },
+  {
+    id: "wallet",
+    label: "Wallet",
+    icon: Wallet,
+    hint: "Paytm · Amazon Pay",
+    disabled: true,
+  },
+  {
+    id: "cod",
+    label: "Cash on delivery",
+    icon: Banknote,
+    hint: "Pay the rider",
+    disabled: false,
+  },
 ] as const;
 
 export function CheckoutView() {
   const router = useRouter();
   const { state, totals, dispatch, hydrated } = useCart();
-  const slots = useMemo(() => deliverySlots(), []);
+  // no slot picker in the UI — just take the earliest available slot
+  const defaultSlot = useMemo(() => deliverySlots()[0] ?? "", []);
 
   const [form, setForm] = useState({
     name: "",
@@ -61,9 +85,7 @@ export function CheckoutView() {
     pincode: "",
     city: "",
     state: "",
-    slot: "",
     payment: "upi",
-    giftNote: "",
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [placing, setPlacing] = useState(false);
@@ -122,7 +144,6 @@ export function CheckoutView() {
     if (!form.line1.trim()) e.line1 = "Required";
     if (!/^\d{6}$/.test(form.pincode)) e.pincode = "Enter a 6-digit pincode";
     if (!form.city.trim()) e.city = "Required";
-    if (!form.slot) e.slot = "Pick a delivery slot";
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -141,8 +162,8 @@ export function CheckoutView() {
         city: form.city,
         state: form.state,
       },
-      deliverySlot: form.slot,
-      giftNote: form.giftNote,
+      deliverySlot: defaultSlot,
+      giftNote: "",
       discountCode: state.discountCode,
       etaFrom: eta.from,
       etaTo: eta.to,
@@ -340,45 +361,17 @@ export function CheckoutView() {
             </p>
           </Fieldset>
 
-          <Fieldset title="Delivery slot">
-            <div
-              className="grid gap-2 sm:grid-cols-2"
-              data-error={Boolean(errors.slot)}
-            >
-              {slots.map((s) => (
-                <label
-                  key={s}
-                  className={`flex cursor-pointer items-center gap-2 rounded-lg border p-3 text-sm transition-colors ${
-                    form.slot === s
-                      ? "border-primary bg-primary/5"
-                      : "border-border hover:border-primary/40"
-                  }`}
-                >
-                  <input
-                    type="radio"
-                    name="slot"
-                    className="accent-[var(--primary)]"
-                    checked={form.slot === s}
-                    onChange={() => set("slot", s)}
-                  />
-                  {s}
-                </label>
-              ))}
-            </div>
-            {errors.slot && (
-              <p className="text-xs text-accent">{errors.slot}</p>
-            )}
-          </Fieldset>
-
           <Fieldset title="Payment">
             <div className="grid gap-2 sm:grid-cols-2">
-              {PAYMENTS.map(({ id, label, icon: Icon, hint }) => (
+              {PAYMENTS.map(({ id, label, icon: Icon, hint, disabled }) => (
                 <label
                   key={id}
-                  className={`flex cursor-pointer items-start gap-3 rounded-lg border p-3.5 transition-colors ${
-                    form.payment === id
-                      ? "border-primary bg-primary/5"
-                      : "border-border hover:border-primary/40"
+                  className={`flex items-start gap-3 rounded-lg border p-3.5 transition-colors ${
+                    disabled
+                      ? "cursor-not-allowed border-border opacity-50"
+                      : form.payment === id
+                        ? "cursor-pointer border-primary bg-primary/5"
+                        : "cursor-pointer border-border hover:border-primary/40"
                   }`}
                 >
                   <input
@@ -386,11 +379,17 @@ export function CheckoutView() {
                     name="payment"
                     className="mt-1 accent-[var(--primary)]"
                     checked={form.payment === id}
+                    disabled={disabled}
                     onChange={() => set("payment", id)}
                   />
                   <span>
                     <span className="flex items-center gap-1.5 text-sm font-medium">
                       <Icon className="h-4 w-4" /> {label}
+                      {disabled && (
+                        <span className="rounded-full border border-border px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+                          Coming soon
+                        </span>
+                      )}
                     </span>
                     <span className="text-xs text-muted-foreground">{hint}</span>
                   </span>
@@ -401,19 +400,6 @@ export function CheckoutView() {
               This is a demo — no gateway is called and no money moves. A live
               build would hand off to Razorpay / Stripe here.
             </p>
-          </Fieldset>
-
-          <Fieldset title="Gift note (optional)">
-            <div className="relative">
-              <Gift className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-              <Textarea
-                className="pl-9"
-                value={form.giftNote}
-                onChange={(e) => set("giftNote", e.target.value)}
-                placeholder="We’ll hand-write this on the box."
-                maxLength={200}
-              />
-            </div>
           </Fieldset>
         </div>
 
