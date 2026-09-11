@@ -4,7 +4,6 @@ import {
   getNewArrivals,
 } from "@/server/products";
 import { Hero } from "@/components/home/hero";
-import { SubscribeBanner } from "@/components/home/subscribe-banner";
 import { Testimonials } from "@/components/home/testimonials";
 import { TrustBadges } from "@/components/trust-badges";
 import { ProductCarousel } from "@/components/carousel";
@@ -64,10 +63,6 @@ export default async function HomePage() {
           />
         </Reveal>
         <ProductCarousel products={newSpicePacks} label="New spice packs" />
-      </Section>
-
-      <Section className="pt-24">
-        <SubscribeBanner />
       </Section>
 
       <Section className="pt-20">
