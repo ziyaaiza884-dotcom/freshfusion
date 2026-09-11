@@ -34,15 +34,12 @@ export function Hero() {
           className="object-cover object-[center_58%]"
         />
       </div>
-      {/* scrim: strong under the copy, lighter toward the jars, and fading to
-          the page background at the top/bottom edges so the photo settles in */}
+      {/* light, even wash — keeps the photo visible everywhere, with just
+          enough of a top/bottom blend to settle into the surrounding page */}
+      <div aria-hidden className="absolute inset-0 -z-20 bg-background/40" />
       <div
         aria-hidden
-        className="absolute inset-0 -z-20 bg-gradient-to-r from-background from-15% via-background/75 via-50% to-background/30"
-      />
-      <div
-        aria-hidden
-        className="absolute inset-0 -z-20 bg-gradient-to-t from-background via-background/25 to-background/70"
+        className="absolute inset-0 -z-20 bg-gradient-to-t from-background/55 via-transparent to-background/45"
       />
       <div className="mx-auto grid max-w-6xl items-center gap-12 px-4 py-16 sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:py-24">
         <div>
@@ -59,7 +56,7 @@ export function Hero() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: easeOutExpo, delay: 0.06 }}
-            className="mt-5 text-4xl font-bold leading-[1.05] sm:text-5xl lg:text-6xl"
+            className="mt-5 text-4xl font-bold leading-[1.05] drop-shadow-[0_3px_16px_rgba(0,0,0,0.55)] sm:text-5xl lg:text-6xl"
           >
             Home-cooked flavours,
             <span className="block text-primary-strong">delivered fresh.</span>
@@ -69,7 +66,7 @@ export function Hero() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: easeOutExpo, delay: 0.12 }}
-            className="mt-5 max-w-md text-base text-muted-foreground sm:text-lg"
+            className="mt-5 max-w-md text-base text-foreground/90 drop-shadow-[0_2px_10px_rgba(0,0,0,0.55)] sm:text-lg"
           >
             Small batches of beef, fish and baby-mango pickles, whole hill
             spices, and ready-to-cook gravies — made in a family kitchen and
