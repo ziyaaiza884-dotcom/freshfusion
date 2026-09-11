@@ -15,7 +15,12 @@ const chips = [
 ];
 
 const jars = [
-  { art: "from-[#5b2b1e] to-[#8c3d21]", category: "pickles" as const, delay: 0 },
+  {
+    art: "from-[#5b2b1e] to-[#8c3d21]",
+    category: "pickles" as const,
+    delay: 0,
+    photo: "/images/4suares/pickle.png",
+  },
   { art: "from-[#c9a227] to-[#e6c84f]", category: "pickles" as const, delay: 0.08 },
   { art: "from-[#3f6b4c] to-[#7aa85f]", category: "spices" as const, delay: 0.16 },
   { art: "from-[#8a3d1f] to-[#c25f2c]", category: "specialty" as const, delay: 0.24 },
@@ -128,12 +133,22 @@ export function Hero() {
               whileHover={{ y: -6, rotate: 0 }}
               className="aspect-square rounded-2xl border border-border shadow-[0_20px_45px_-20px_var(--glow-soft)] transition-shadow duration-300 hover:shadow-[0_24px_55px_-16px_var(--glow)]"
             >
-              <ProductArt
-                art={j.art}
-                category={j.category}
-                className="h-full w-full rounded-2xl"
-                label="Fresh Fusion jar"
-              />
+              {j.photo ? (
+                <Image
+                  src={j.photo}
+                  alt="Fresh Fusion beef pickle jar"
+                  width={300}
+                  height={300}
+                  className="h-full w-full rounded-2xl object-cover"
+                />
+              ) : (
+                <ProductArt
+                  art={j.art}
+                  category={j.category}
+                  className="h-full w-full rounded-2xl"
+                  label="Fresh Fusion jar"
+                />
+              )}
             </motion.div>
           ))}
         </div>
