@@ -10,7 +10,7 @@ export const metadata = {
 
 export default function AdminLoginPage() {
   return (
-    <div className="grid min-h-screen place-items-center bg-surface-muted/40 px-4">
+    <div className="ff-admin grid min-h-screen place-items-center bg-surface-muted/40 px-4 text-foreground">
       <Suspense>
         <AdminLoginForm />
       </Suspense>

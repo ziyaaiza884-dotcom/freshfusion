@@ -95,6 +95,7 @@ export function Hero() {
         </div>
 
         <div className="relative mx-auto grid w-full max-w-sm grid-cols-2 gap-4 lg:max-w-none">
+          <div className="ff-lamplight" aria-hidden />
           {jars.map((j, i) => (
             <motion.div
               key={i}
@@ -106,7 +107,7 @@ export function Hero() {
                 delay: 0.2 + j.delay,
               }}
               whileHover={{ y: -6, rotate: 0 }}
-              className="aspect-square rounded-2xl border border-border shadow-sm"
+              className="aspect-square rounded-2xl border border-border shadow-[0_20px_45px_-20px_var(--glow-soft)] transition-shadow duration-300 hover:shadow-[0_24px_55px_-16px_var(--glow)]"
             >
               <ProductArt
                 art={j.art}

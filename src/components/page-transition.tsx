@@ -12,10 +12,10 @@ export function PageTransition({ children }: { children: ReactNode }) {
       <motion.main
         key={pathname}
         className="flex-1"
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -8 }}
-        transition={{ duration: 0.32, ease: easeOutExpo }}
+        initial={{ opacity: 0, y: 14, scale: 0.99 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: -10, scale: 0.99 }}
+        transition={{ duration: 0.38, ease: easeOutExpo }}
       >
         {children}
       </motion.main>

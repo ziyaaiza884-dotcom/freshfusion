@@ -31,9 +31,9 @@ export function ProductCard({
 
   return (
     <motion.article
-      whileHover={{ y: -4 }}
-      transition={{ duration: 0.2 }}
-      className="group flex h-full flex-col overflow-hidden rounded-lg border border-border bg-surface"
+      whileHover={{ y: -6 }}
+      transition={{ duration: 0.25, ease: "easeOut" }}
+      className="group flex h-full flex-col overflow-hidden rounded-lg border border-border bg-surface shadow-sm transition-[box-shadow,border-color] duration-300 hover:border-primary/40 hover:shadow-[0_18px_40px_-16px_var(--glow)]"
     >
       <Link
         href={`/product/${product.slug}`}
@@ -44,7 +44,7 @@ export function ProductCard({
           category={product.category}
           label={`${product.name} — illustration`}
           className={cn(
-            "h-full w-full transition-transform duration-500 group-hover:scale-[1.04]",
+            "h-full w-full transition-transform duration-700 ease-out group-hover:scale-[1.07]",
             priority && "",
           )}
         />
@@ -95,10 +95,10 @@ export function ProductCard({
             disabled={!product.inStock}
             aria-label={`Add ${product.name} to cart`}
             className={cn(
-              "inline-flex h-10 items-center gap-1.5 rounded-md px-3 text-sm font-semibold transition-all active:scale-95 disabled:opacity-40",
+              "inline-flex h-10 items-center gap-1.5 rounded-md px-3 text-sm font-semibold transition-all duration-200 active:scale-95 disabled:opacity-40",
               justAdded
-                ? "bg-primary text-primary-foreground"
-                : "bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground",
+                ? "bg-primary text-primary-foreground shadow-[0_8px_20px_-8px_var(--glow)]"
+                : "bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground hover:shadow-[0_8px_20px_-8px_var(--glow)]",
             )}
           >
             {justAdded ? (

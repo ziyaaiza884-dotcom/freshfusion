@@ -13,7 +13,7 @@ export default function AdminDashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex min-h-screen flex-col bg-background md:flex-row">
+    <div className="ff-admin flex min-h-screen flex-col bg-background text-foreground md:flex-row">
       <AdminTopbar />
       <AdminSidebar />
       <div className="flex-1 overflow-x-auto">
