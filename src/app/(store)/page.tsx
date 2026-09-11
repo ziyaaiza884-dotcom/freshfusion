@@ -5,6 +5,7 @@ import {
 } from "@/server/products";
 import { Hero } from "@/components/home/hero";
 import { SubscribeBanner } from "@/components/home/subscribe-banner";
+import { Testimonials } from "@/components/home/testimonials";
 import { TrustBadges } from "@/components/trust-badges";
 import { ProductCarousel } from "@/components/carousel";
 import { Section, SectionHeading } from "@/components/section";
@@ -42,6 +43,16 @@ export default async function HomePage() {
           />
         </Reveal>
         <ProductCarousel products={bestPickles} label="Best-selling pickles" />
+      </Section>
+
+      <Section className="pt-20">
+        <Reveal>
+          <SectionHeading
+            eyebrow="From our customers"
+            title="Jars that made it back home"
+          />
+          <Testimonials />
+        </Reveal>
       </Section>
 
       <Section className="pt-20">

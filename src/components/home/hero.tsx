@@ -27,11 +27,11 @@ export function Hero() {
       <div className="absolute inset-0 -z-30">
         <Image
           src="/images/kerala-hero.jpg"
-          alt="Kerala backwaters at dusk — a kettuvallam houseboat gliding past palm-lined banks"
+          alt="Misty peak rising over the tea-plantation hills of Munnar, Kerala"
           fill
           priority
           sizes="100vw"
-          className="object-cover object-[center_58%]"
+          className="object-cover object-[center_70%]"
         />
       </div>
       {/* light, even wash — keeps the photo visible everywhere, with just
