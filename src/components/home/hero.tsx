@@ -26,20 +26,25 @@ export function Hero() {
     <section className="relative isolate overflow-hidden">
       <div className="absolute inset-0 -z-30">
         <Image
-          src="/images/kerala-hero.jpg"
-          alt="Misty peak rising over the tea-plantation hills of Munnar, Kerala"
+          src="/images/beef-pickle-hero.jpg"
+          alt="A jar of Fresh Fusion beef pickle on a wooden kitchen counter, surrounded by whole spices"
           fill
           priority
           sizes="100vw"
-          className="object-cover object-[center_70%]"
+          className="object-cover object-[center_42%]"
         />
       </div>
-      {/* light, even wash — keeps the photo visible everywhere, with just
-          enough of a top/bottom blend to settle into the surrounding page */}
-      <div aria-hidden className="absolute inset-0 -z-20 bg-background/40" />
+      {/* the jar sits dead-centre in the source photo, right under the
+          headline column — a stronger wash on the left keeps the text
+          readable while the jar itself stays clear on the right, next to
+          the product tiles */}
       <div
         aria-hidden
-        className="absolute inset-0 -z-20 bg-gradient-to-t from-background/55 via-transparent to-background/45"
+        className="absolute inset-0 -z-20 bg-gradient-to-r from-background/92 via-background/55 to-background/15"
+      />
+      <div
+        aria-hidden
+        className="absolute inset-0 -z-20 bg-gradient-to-t from-background/60 via-transparent to-background/35"
       />
       <div className="mx-auto grid max-w-6xl items-center gap-12 px-4 py-16 sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:py-24">
         <div>
