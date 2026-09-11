@@ -1,5 +1,10 @@
 import Link from "next/link";
-import { Sprout } from "lucide-react";
+import { MessageCircle, Phone, Sprout } from "lucide-react";
+import {
+  CONTACT_PHONE_DISPLAY,
+  CONTACT_PHONE_TEL,
+  CONTACT_WHATSAPP_URL,
+} from "@/lib/contact";
 
 export function Footer() {
   return (
@@ -16,6 +21,24 @@ export function Footer() {
             Home-cooked flavours, delivered fresh. Small batches of pickles and
             spices, made the way they are at home.
           </p>
+          <div className="mt-4 space-y-2 text-sm">
+            <a
+              href={CONTACT_PHONE_TEL}
+              className="flex items-center gap-2 text-foreground transition-colors hover:text-primary"
+            >
+              <Phone className="h-4 w-4 text-primary" />
+              {CONTACT_PHONE_DISPLAY}
+            </a>
+            <a
+              href={CONTACT_WHATSAPP_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 text-foreground transition-colors hover:text-primary"
+            >
+              <MessageCircle className="h-4 w-4 text-primary" />
+              Chat on WhatsApp
+            </a>
+          </div>
         </div>
 
         <FooterCol
@@ -33,7 +56,7 @@ export function Footer() {
             ["Track an order", "/cart"],
             ["Delivery & returns", "/shop"],
             ["FSSAI & sourcing", "/shop"],
-            ["Contact", "/shop"],
+            ["Contact", CONTACT_WHATSAPP_URL],
           ]}
         />
         <FooterCol
@@ -64,16 +87,22 @@ function FooterCol({
     <div>
       <h4 className="text-sm font-semibold text-foreground">{title}</h4>
       <ul className="mt-3 space-y-2 text-sm">
-        {links.map(([label, href]) => (
-          <li key={label}>
-            <Link
-              href={href}
-              className="text-muted-foreground transition-colors hover:text-foreground"
-            >
-              {label}
-            </Link>
-          </li>
-        ))}
+        {links.map(([label, href]) => {
+          const external = href.startsWith("http");
+          return (
+            <li key={label}>
+              <Link
+                href={href}
+                {...(external
+                  ? { target: "_blank", rel: "noopener noreferrer" }
+                  : {})}
+                className="text-muted-foreground transition-colors hover:text-foreground"
+              >
+                {label}
+              </Link>
+            </li>
+          );
+        })}
       </ul>
     </div>
   );

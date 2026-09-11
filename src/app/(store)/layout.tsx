@@ -1,6 +1,7 @@
 import { CartProvider } from "@/context/cart-context";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
+import { WhatsAppButton } from "@/components/whatsapp-button";
 import { PageTransition } from "@/components/page-transition";
 import { getSettings } from "@/server/store";
 import { getTheme, themeStyle } from "@/lib/themes";
@@ -25,6 +26,7 @@ export default async function StoreLayout({
         <Header />
         <PageTransition>{children}</PageTransition>
         <Footer />
+        <WhatsAppButton />
       </CartProvider>
     </div>
   );
