@@ -191,3 +191,110 @@ h1, h2, h3, h4 {
     animation: none;
   }
 }
+
+/* ------------------------------------------------------------------ */
+/*  Festive hero dressing — ambient particles + corner illustration,  */
+/*  themed per festival (Eid, Diwali, Onam, Christmas, Ramadan,        */
+/*  Nowruz). See src/lib/festive.ts + src/components/home/            */
+/*  festive-scene.tsx. Colors always come from the active theme's     */
+/*  tokens, never hardcoded, so a new theme just works.                */
+/* ------------------------------------------------------------------ */
+
+@keyframes ff-twinkle {
+  0%, 100% {
+    opacity: 0.25;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}
+
+@keyframes ff-fall {
+  0% {
+    transform: translateY(-10%) translateX(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.9;
+  }
+  90% {
+    opacity: 0.7;
+  }
+  100% {
+    transform: translateY(420%) translateX(var(--ff-drift, 12px));
+    opacity: 0;
+  }
+}
+
+@keyframes ff-rise {
+  0% {
+    transform: translateY(0) scale(0.6);
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-260%) scale(1.1);
+    opacity: 0;
+  }
+}
+
+@keyframes ff-sway {
+  0%, 100% {
+    transform: rotate(-3deg);
+  }
+  50% {
+    transform: rotate(3deg);
+  }
+}
+
+.ff-particle {
+  position: absolute;
+  border-radius: 999px;
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+
+.ff-particle--star {
+  background: radial-gradient(circle, currentColor, transparent 70%);
+  animation-name: ff-twinkle;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+
+.ff-particle--snow {
+  background: radial-gradient(circle, currentColor, transparent 75%);
+  animation-name: ff-fall;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+.ff-particle--petal {
+  background: currentColor;
+  border-radius: 60% 0 60% 0;
+  animation-name: ff-fall;
+  animation-timing-function: ease-in;
+  animation-iteration-count: infinite;
+}
+
+.ff-particle--spark {
+  background: radial-gradient(circle, currentColor, transparent 70%);
+  animation-name: ff-rise;
+  animation-timing-function: ease-out;
+  animation-iteration-count: infinite;
+}
+
+.ff-festive-icon {
+  animation: ff-sway 5s ease-in-out infinite;
+  transform-origin: 50% 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ff-particle,
+  .ff-festive-icon {
+    animation: none !important;
+  }
+}

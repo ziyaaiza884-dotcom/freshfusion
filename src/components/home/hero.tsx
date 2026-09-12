@@ -8,6 +8,8 @@ import { ButtonLink } from "@/components/ui/button";
 import { easeOutExpo } from "@/components/ui/motion";
 import { ProductArt } from "@/components/product-art";
 import { MEDIA_SLOTS } from "@/lib/media";
+import { festiveFor } from "@/lib/festive";
+import { FestiveScene } from "@/components/home/festive-scene";
 
 const HERO_DEFAULT = MEDIA_SLOTS[0].default;
 
@@ -51,12 +53,16 @@ const jars = [
 export function Hero({
   heroSrc,
   tileSrcs,
+  themeId = "everyday",
 }: {
   /** admin-uploaded hero background, if any — falls back to the bundled photo */
   heroSrc?: string;
   /** admin-uploaded tile photos, indexed 0-3 — falls back to each tile's bundled photo */
   tileSrcs?: (string | undefined)[];
+  /** active storefront theme id — drives festival dressing (see lib/festive.ts) */
+  themeId?: string;
 } = {}) {
+  const festive = festiveFor(themeId);
   return (
     <section className="relative isolate overflow-hidden">
       <div className="absolute inset-0 -z-30">
@@ -72,31 +78,48 @@ export function Hero({
       {/* the jar sits dead-centre in the source photo, right under the
           headline column — a stronger wash on the left keeps the text
           readable while the jar itself stays clear on the right, next to
-          the product tiles */}
+          the product tiles. Fixed dark neutrals, not the theme's own
+          --background: on a light theme (Onam, Eid, Christmas, Nowruz)
+          a near-white wash at this strength would erase the photo
+          entirely, so the hero always reads as a dark photo scene
+          regardless of the rest of the site's light/dark theme. */}
       <div
         aria-hidden
-        className="absolute inset-0 -z-20 bg-gradient-to-r from-background/92 via-background/55 to-background/15"
+        className="absolute inset-0 -z-20 bg-gradient-to-r from-black/85 via-black/50 to-black/10"
       />
       <div
         aria-hidden
-        className="absolute inset-0 -z-20 bg-gradient-to-t from-background/60 via-transparent to-background/35"
+        className="absolute inset-0 -z-20 bg-gradient-to-t from-black/55 via-transparent to-black/30"
       />
+      <FestiveScene themeId={themeId} />
       <div className="mx-auto grid max-w-6xl items-center gap-12 px-4 py-16 sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:py-24">
         <div>
-          <motion.p
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease: easeOutExpo }}
-            className="inline-flex items-center gap-2 rounded-full border border-border bg-surface px-3 py-1 text-xs font-semibold uppercase tracking-wide text-primary"
-          >
-            100% home-cooked · FSSAI-approved
-          </motion.p>
+          <div className="flex flex-wrap items-center gap-2">
+            <motion.p
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, ease: easeOutExpo }}
+              className="inline-flex items-center gap-2 rounded-full border border-border bg-surface px-3 py-1 text-xs font-semibold uppercase tracking-wide text-primary"
+            >
+              100% home-cooked · FSSAI-approved
+            </motion.p>
+            {festive && (
+              <motion.p
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, ease: easeOutExpo, delay: 0.08 }}
+                className="inline-flex items-center gap-1.5 rounded-full bg-accent px-3 py-1 text-xs font-semibold uppercase tracking-wide text-accent-foreground"
+              >
+                {festive.greeting}
+              </motion.p>
+            )}
+          </div>
 
           <motion.h1
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: easeOutExpo, delay: 0.06 }}
-            className="mt-5 text-4xl font-bold leading-[1.05] drop-shadow-[0_3px_16px_rgba(0,0,0,0.55)] sm:text-5xl lg:text-6xl"
+            className="mt-5 text-4xl font-bold leading-[1.05] text-white drop-shadow-[0_3px_16px_rgba(0,0,0,0.55)] sm:text-5xl lg:text-6xl"
           >
             Home-cooked flavours,
             <span className="block text-primary-strong">delivered fresh.</span>
@@ -106,7 +129,7 @@ export function Hero({
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: easeOutExpo, delay: 0.12 }}
-            className="mt-5 max-w-md text-base text-foreground/90 drop-shadow-[0_2px_10px_rgba(0,0,0,0.55)] sm:text-lg"
+            className="mt-5 max-w-md text-base text-white/90 drop-shadow-[0_2px_10px_rgba(0,0,0,0.55)] sm:text-lg"
           >
             Small batches of beef, fish and baby-mango pickles, whole hill
             spices, and ready-to-cook gravies — made in a family kitchen and

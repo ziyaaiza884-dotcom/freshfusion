@@ -3,7 +3,7 @@ import {
   getBestSellers,
   getNewArrivals,
 } from "@/server/products";
-import { getMedia } from "@/server/store";
+import { getMedia, getSettings } from "@/server/store";
 import { MEDIA_SLOTS, mediaSrc } from "@/lib/media";
 import { Hero } from "@/components/home/hero";
 import { Testimonials } from "@/components/home/testimonials";
@@ -15,11 +15,12 @@ import { Reveal } from "@/components/ui/motion";
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  const [all, best, fresh, media] = await Promise.all([
+  const [all, best, fresh, media, settings] = await Promise.all([
     getAllProducts(),
     getBestSellers(),
     getNewArrivals(),
     getMedia(),
+    getSettings(),
   ]);
 
   const newSpicePacks = fresh.filter((p) => p.category !== "pickles");
@@ -33,7 +34,7 @@ export default async function HomePage() {
 
   return (
     <>
-      <Hero heroSrc={heroSrc} tileSrcs={tileSrcs} />
+      <Hero heroSrc={heroSrc} tileSrcs={tileSrcs} themeId={settings.theme} />
 
       <Section className="py-6">
         <Reveal>
