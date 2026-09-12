@@ -17,7 +17,7 @@ import { SearchBar } from "@/components/search-bar";
 import { ProductGrid } from "@/components/product-grid";
 import { Button } from "@/components/ui/button";
 
-const VALID_CATEGORIES: Category[] = ["pickles", "spices", "specialty"];
+const VALID_CATEGORIES: Category[] = ["pickles", "spices", "pulses", "rice", "specialty"];
 
 const SORTS: { value: SortKey; label: string }[] = [
   { value: "featured", label: "Featured" },

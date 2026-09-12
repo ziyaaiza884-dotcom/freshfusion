@@ -1,10 +1,12 @@
 "use client";
 
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { Check, Loader2 } from "lucide-react";
+import { Camera, Check, Loader2, RotateCcw } from "lucide-react";
 import type { StockedProduct } from "@/lib/analytics";
 import { CATEGORY_LABELS } from "@/data/types";
+import { compressImage } from "@/lib/client-image";
+import { ProductArt } from "@/components/product-art";
 import { cn } from "@/lib/utils";
 
 type RowState = {
@@ -27,12 +29,20 @@ const dirty = (a: RowState, b: RowState) =>
   a.madeOn !== b.madeOn ||
   a.inStock !== b.inStock;
 
-export function InventoryTable({ products }: { products: StockedProduct[] }) {
+export function InventoryTable({
+  products,
+  photoIndex,
+}: {
+  products: StockedProduct[];
+  /** slug -> updatedAt (ms), for products with an admin-uploaded photo */
+  photoIndex: Record<string, number>;
+}) {
   return (
     <div className="overflow-x-auto rounded-lg border border-border">
-      <table className="w-full min-w-[720px] text-sm">
+      <table className="w-full min-w-[820px] text-sm">
         <thead>
           <tr className="border-b border-border bg-surface-muted/50 text-left text-xs uppercase tracking-wide text-muted-foreground">
+            <th className="px-4 py-3 font-semibold">Photo</th>
             <th className="px-4 py-3 font-semibold">Product</th>
             <th className="px-4 py-3 font-semibold">Price ₹</th>
             <th className="px-4 py-3 font-semibold">Stock</th>
@@ -43,7 +53,11 @@ export function InventoryTable({ products }: { products: StockedProduct[] }) {
         </thead>
         <tbody className="divide-y divide-border">
           {products.map((p) => (
-            <InventoryRow key={p.slug} product={p} />
+            <InventoryRow
+              key={p.slug}
+              product={p}
+              photoUpdatedAt={photoIndex[p.slug]}
+            />
           ))}
         </tbody>
       </table>
@@ -51,7 +65,128 @@ export function InventoryTable({ products }: { products: StockedProduct[] }) {
   );
 }
 
-function InventoryRow({ product }: { product: StockedProduct }) {
+function PhotoCell({
+  slug,
+  art,
+  category,
+  updatedAt,
+}: {
+  slug: string;
+  art: string;
+  category: StockedProduct["category"];
+  updatedAt: number | undefined;
+}) {
+  const router = useRouter();
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [preview, setPreview] = useState<string | null>(null);
+  const [hasPhoto, setHasPhoto] = useState(Boolean(updatedAt));
+  const src = preview ?? (updatedAt ? `/api/media/product/${slug}/${updatedAt}` : null);
+
+  const upload = async (file: File) => {
+    setBusy(true);
+    setError(null);
+    try {
+      const blob = await compressImage(file, 1000, 0.85);
+      setPreview(URL.createObjectURL(blob));
+      const form = new FormData();
+      form.append("file", blob, "upload.jpg");
+      const res = await fetch(`/api/admin/media/product/${slug}`, {
+        method: "POST",
+        body: form,
+      });
+      if (!res.ok) {
+        const j = (await res.json().catch(() => ({}))) as { error?: string };
+        throw new Error(j.error ?? `Upload failed (${res.status})`);
+      }
+      setHasPhoto(true);
+      router.refresh();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Upload failed");
+      setPreview(null);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const reset = async () => {
+    setBusy(true);
+    setError(null);
+    try {
+      const res = await fetch(`/api/admin/media/product/${slug}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) throw new Error("Reset failed");
+      setPreview(null);
+      setHasPhoto(false);
+      router.refresh();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Reset failed");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <div className="flex items-center gap-1.5">
+      <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-md border border-border">
+        {src ? (
+          // eslint-disable-next-line @next/next/no-img-element -- admin thumbnail; source can be a blob: preview URL
+          <img src={src} alt="" className="h-full w-full object-cover" />
+        ) : (
+          <ProductArt art={art} category={category} className="h-full w-full" />
+        )}
+      </div>
+      <div className="flex flex-col gap-1">
+        <input
+          ref={inputRef}
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          className="hidden"
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            if (file) upload(file);
+            e.target.value = "";
+          }}
+        />
+        <button
+          type="button"
+          onClick={() => inputRef.current?.click()}
+          disabled={busy}
+          aria-label="Upload photo"
+          className="grid h-6 w-6 place-items-center rounded border border-border text-muted-foreground transition-colors hover:bg-surface-muted disabled:opacity-50"
+        >
+          {busy ? (
+            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+          ) : (
+            <Camera className="h-3.5 w-3.5" />
+          )}
+        </button>
+        {hasPhoto && (
+          <button
+            type="button"
+            onClick={reset}
+            disabled={busy}
+            aria-label="Reset photo"
+            className="grid h-6 w-6 place-items-center rounded border border-border text-muted-foreground transition-colors hover:bg-surface-muted disabled:opacity-50"
+          >
+            <RotateCcw className="h-3.5 w-3.5" />
+          </button>
+        )}
+      </div>
+      {error && <p className="text-[10px] text-accent">{error}</p>}
+    </div>
+  );
+}
+
+function InventoryRow({
+  product,
+  photoUpdatedAt,
+}: {
+  product: StockedProduct;
+  photoUpdatedAt: number | undefined;
+}) {
   const router = useRouter();
   const original = pick(product);
   const [row, setRow] = useState<RowState>(original);
@@ -88,6 +223,14 @@ function InventoryRow({ product }: { product: StockedProduct }) {
 
   return (
     <tr id={product.slug} className="scroll-mt-24 bg-surface">
+      <td className="px-4 py-3">
+        <PhotoCell
+          slug={product.slug}
+          art={product.art}
+          category={product.category}
+          updatedAt={photoUpdatedAt}
+        />
+      </td>
       <td className="px-4 py-3">
         <p className="font-medium">{product.name}</p>
         <p className="text-xs text-muted-foreground">

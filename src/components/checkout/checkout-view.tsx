@@ -22,7 +22,7 @@ import {
   type PaymentMethod,
   type StoredOrder,
 } from "@/lib/orders";
-import { ProductArt } from "@/components/product-art";
+import { ProductPhoto } from "@/components/product-photo";
 import { getProduct } from "@/data/catalog";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -413,7 +413,8 @@ export function CheckoutView() {
                   className="flex items-center gap-3 py-2 text-sm"
                 >
                   <div className="h-12 w-12 shrink-0 overflow-hidden rounded-md border border-border">
-                    <ProductArt
+                    <ProductPhoto
+                      slug={line.slug}
                       art={line.art}
                       category={product?.category ?? "pickles"}
                       className="h-full w-full"

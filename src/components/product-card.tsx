@@ -7,7 +7,7 @@ import { useState } from "react";
 import type { Product } from "@/data/types";
 import { useCart, useCartLine } from "@/context/cart-context";
 import { formatPrice, formatWeight } from "@/lib/format";
-import { ProductArt } from "@/components/product-art";
+import { ProductPhoto } from "@/components/product-photo";
 import { Badge } from "@/components/ui/badge";
 import { Stars } from "@/components/stars";
 import { cn } from "@/lib/utils";
@@ -39,10 +39,11 @@ export function ProductCard({
         href={`/product/${product.slug}`}
         className="relative block aspect-[4/3] overflow-hidden"
       >
-        <ProductArt
+        <ProductPhoto
+          slug={product.slug}
           art={product.art}
           category={product.category}
-          label={`${product.name} — illustration`}
+          label={product.name}
           className={cn(
             "h-full w-full transition-transform duration-700 ease-out group-hover:scale-[1.07]",
             priority && "",

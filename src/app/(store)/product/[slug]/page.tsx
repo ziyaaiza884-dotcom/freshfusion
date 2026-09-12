@@ -61,6 +61,7 @@ export default async function ProductPage({ params }: RouteParams) {
 
       <div className="mt-6 grid gap-10 lg:grid-cols-2">
         <ProductGallery
+          slug={product.slug}
           art={product.art}
           category={product.category}
           name={product.name}

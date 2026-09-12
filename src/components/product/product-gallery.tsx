@@ -3,18 +3,21 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import type { Category } from "@/data/types";
-import { ProductArt } from "@/components/product-art";
+import { ProductPhoto } from "@/components/product-photo";
 import { cn } from "@/lib/utils";
 
 /**
- * Slice 1 has no photography, so the "gallery" is the gradient art shown at
- * three crops. Hover / focus the main panel to pinch-zoom.
+ * Shows the admin-uploaded product photo if one exists (at three crops),
+ * falling back to the gradient placeholder art otherwise. Hover / focus the
+ * main panel to pinch-zoom.
  */
 export function ProductGallery({
+  slug,
   art,
   category,
   name,
 }: {
+  slug: string;
   art: string;
   category: Category;
   name: string;
@@ -39,11 +42,12 @@ export function ProductGallery({
           transition={{ duration: 0.4 }}
           className="h-full w-full"
         >
-          <ProductArt
+          <ProductPhoto
+            slug={slug}
             art={art}
             category={category}
             className={cn("h-full w-full", crops[active])}
-            label={`${name} — illustration`}
+            label={name}
           />
         </motion.div>
       </motion.div>
@@ -61,7 +65,7 @@ export function ProductGallery({
               i === active ? "border-primary" : "border-border",
             )}
           >
-            <ProductArt art={art} category={category} className="h-full w-full" />
+            <ProductPhoto slug={slug} art={art} category={category} className="h-full w-full" />
           </button>
         ))}
       </div>

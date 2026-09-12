@@ -8,7 +8,7 @@ import { useCart } from "@/context/cart-context";
 import { COUPONS, type CartLine } from "@/lib/cart";
 import { getProduct } from "@/data/catalog";
 import { formatPrice } from "@/lib/format";
-import { ProductArt } from "@/components/product-art";
+import { ProductPhoto } from "@/components/product-photo";
 import { QuantityStepper } from "@/components/quantity-stepper";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -163,7 +163,8 @@ function CartLineRow({ line }: { line: CartLine }) {
         href={`/product/${line.slug}`}
         className="h-24 w-24 shrink-0 overflow-hidden rounded-lg border border-border"
       >
-        <ProductArt
+        <ProductPhoto
+          slug={line.slug}
           art={line.art}
           category={product?.category ?? "pickles"}
           className="h-full w-full"
@@ -228,7 +229,8 @@ function SavedLine({ line }: { line: CartLine }) {
   return (
     <li className="flex items-center gap-4 rounded-lg border border-border bg-surface p-3">
       <div className="h-16 w-16 shrink-0 overflow-hidden rounded-md border border-border">
-        <ProductArt
+        <ProductPhoto
+          slug={line.slug}
           art={line.art}
           category={product?.category ?? "pickles"}
           className="h-full w-full"

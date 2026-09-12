@@ -1,4 +1,5 @@
 import { CartProvider } from "@/context/cart-context";
+import { ProductPhotosProvider } from "@/context/product-photos-context";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { WhatsAppButton } from "@/components/whatsapp-button";
@@ -23,10 +24,12 @@ export default async function StoreLayout({
       className="flex min-h-screen flex-col bg-background text-foreground"
     >
       <CartProvider>
-        <Header />
-        <PageTransition>{children}</PageTransition>
-        <Footer />
-        <WhatsAppButton />
+        <ProductPhotosProvider>
+          <Header />
+          <PageTransition>{children}</PageTransition>
+          <Footer />
+          <WhatsAppButton />
+        </ProductPhotosProvider>
       </CartProvider>
     </div>
   );

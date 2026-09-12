@@ -1,4 +1,4 @@
-export type Category = "pickles" | "spices" | "specialty";
+export type Category = "pickles" | "spices" | "specialty" | "pulses" | "rice";
 export type Dietary = "veg" | "nonveg";
 
 export interface Product {
@@ -33,6 +33,8 @@ export const CATEGORY_LABELS: Record<Category, string> = {
   pickles: "Pickles",
   spices: "Spices",
   specialty: "Specialty",
+  pulses: "Pulses",
+  rice: "Rice",
 };
 
 export const DIETARY_LABELS: Record<Dietary, string> = {

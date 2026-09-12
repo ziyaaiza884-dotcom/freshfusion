@@ -55,14 +55,52 @@ function LeafGlyph() {
   );
 }
 
-const glyphFor = (category: Category) =>
-  category === "spices" ? (
-    <SpiceGlyph />
-  ) : category === "specialty" ? (
-    <LeafGlyph />
-  ) : (
-    <JarGlyph />
+function GrainGlyph() {
+  return (
+    <g
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2.4}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M14 46h36a4 4 0 0 0 4-4v-2H10v2a4 4 0 0 0 4 4Z" />
+      <path d="M10 40c0-10 8-22 22-22s22 12 22 22" opacity={0.7} />
+      <path d="M32 18v22M24 24v16M40 24v16" opacity={0.5} />
+    </g>
   );
+}
+
+function PulseGlyph() {
+  return (
+    <g
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2.4}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <ellipse cx="24" cy="30" rx="8" ry="6" transform="rotate(-20 24 30)" />
+      <ellipse cx="38" cy="24" rx="8" ry="6" transform="rotate(10 38 24)" opacity={0.75} />
+      <ellipse cx="34" cy="38" rx="8" ry="6" transform="rotate(35 34 38)" opacity={0.6} />
+    </g>
+  );
+}
+
+const glyphFor = (category: Category) => {
+  switch (category) {
+    case "spices":
+      return <SpiceGlyph />;
+    case "specialty":
+      return <LeafGlyph />;
+    case "rice":
+      return <GrainGlyph />;
+    case "pulses":
+      return <PulseGlyph />;
+    default:
+      return <JarGlyph />;
+  }
+};
 
 export function ProductArt({
   art,

@@ -8,7 +8,7 @@ import { formatPrice } from "@/lib/format";
 import type { ProductFilters } from "@/lib/filters";
 import { cn } from "@/lib/utils";
 
-const CATEGORIES: Category[] = ["pickles", "spices", "specialty"];
+const CATEGORIES: Category[] = ["pickles", "spices", "pulses", "rice", "specialty"];
 const DIETARY: Dietary[] = ["veg", "nonveg"];
 
 export function FilterSidebar({

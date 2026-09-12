@@ -14,7 +14,7 @@ import {
 import { getProduct, products } from "@/data/catalog";
 import { useCart } from "@/context/cart-context";
 import { formatPrice } from "@/lib/format";
-import { ProductArt } from "@/components/product-art";
+import { ProductPhoto } from "@/components/product-photo";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { easeOutExpo } from "@/components/ui/motion";
@@ -188,7 +188,8 @@ export function OrderView({ id }: { id: string }) {
             return (
               <li key={line.slug} className="flex items-center gap-3 py-3">
                 <div className="h-12 w-12 shrink-0 overflow-hidden rounded-md border border-border">
-                  <ProductArt
+                  <ProductPhoto
+                    slug={line.slug}
                     art={line.art}
                     category={product?.category ?? "pickles"}
                     className="h-full w-full"

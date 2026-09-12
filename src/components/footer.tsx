@@ -52,6 +52,8 @@ export function Footer() {
             ["All products", "/shop"],
             ["Pickles", "/shop?category=pickles"],
             ["Spices", "/shop?category=spices"],
+            ["Pulses", "/shop?category=pulses"],
+            ["Rice", "/shop?category=rice"],
             ["Specialty", "/shop?category=specialty"],
           ]}
         />

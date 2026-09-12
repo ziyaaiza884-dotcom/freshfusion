@@ -26,7 +26,7 @@ import {
 import { seedReviews } from "@/data/seed-reviews";
 import { DEFAULT_THEME_ID, isThemeId } from "@/lib/themes";
 import { verifySignature } from "@/server/payments/gateway";
-import { isMediaKey, type MediaKey, type MediaMap } from "@/lib/media";
+import { isMediaKey, type MediaItem, type MediaKey, type MediaMap } from "@/lib/media";
 
 export interface StoreProduct extends Product {
   /** units on hand; the storefront still gates on `inStock` */
@@ -45,6 +45,8 @@ export interface Store {
   settings: StoreSettings;
   /** admin-uploaded homepage imagery, keyed by MediaKey; see src/lib/media.ts */
   media: MediaMap;
+  /** admin-uploaded per-product photos, keyed by product slug */
+  productPhotos: Record<string, MediaItem>;
   meta: { seededAt: string; version: number };
 }
 
@@ -76,6 +78,7 @@ function seed(): Store {
     reviews: seedReviews(),
     settings: defaultSettings(),
     media: {},
+    productPhotos: {},
     meta: { seededAt: new Date().toISOString(), version: STORE_VERSION },
   };
 }
@@ -92,11 +95,25 @@ async function persist(store: Store): Promise<void> {
 function normalise(store: Store): Store {
   store.orders = (store.orders ?? []).map(migrateOrder);
   if (!Array.isArray(store.reviews)) store.reviews = seedReviews();
+  // back-fill any catalog products added after this store's document was
+  // first seeded (e.g. new categories) without touching existing products'
+  // admin-edited price/stock/inStock values
+  const known = new Set(store.products.map((p) => p.slug));
+  const missing = seedProducts.filter((p) => !known.has(p.slug));
+  if (missing.length) {
+    const startIndex = store.products.length;
+    store.products.push(
+      ...missing.map((p, i) => ({ ...p, stockQty: seedStock(p, startIndex + i) })),
+    );
+  }
   if (!store.settings || !isThemeId(store.settings.theme)) {
     store.settings = defaultSettings();
   }
   if (!store.media || typeof store.media !== "object") {
     store.media = {};
+  }
+  if (!store.productPhotos || typeof store.productPhotos !== "object") {
+    store.productPhotos = {};
   }
   return store;
 }
@@ -182,6 +199,50 @@ export function clearMediaItem(key: MediaKey): Promise<MediaMap> {
     delete store.media[key];
     await persist(store);
     return store.media;
+  });
+}
+
+/** lightweight index (slug -> updatedAt ms) for clients that just need to
+ *  know which products have a custom photo, without shipping the base64
+ *  bytes of every product's photo */
+export function getProductPhotoIndex(): Promise<Record<string, number>> {
+  return getStore().then((s) => {
+    const index: Record<string, number> = {};
+    for (const [slug, item] of Object.entries(s.productPhotos)) {
+      index[slug] = new Date(item.updatedAt).getTime();
+    }
+    return index;
+  });
+}
+
+export function getProductPhotoItem(
+  slug: string,
+): Promise<MediaItem | undefined> {
+  return getStore().then((s) => s.productPhotos[slug]);
+}
+
+export function setProductPhoto(
+  slug: string,
+  data: string,
+  contentType: string,
+): Promise<MediaItem> {
+  return enqueue(async () => {
+    const store = await load();
+    if (!store.products.some((p) => p.slug === slug)) {
+      throw new OrderError("Unknown product.", "bad_request");
+    }
+    const item: MediaItem = { data, contentType, updatedAt: new Date().toISOString() };
+    store.productPhotos[slug] = item;
+    await persist(store);
+    return item;
+  });
+}
+
+export function clearProductPhoto(slug: string): Promise<void> {
+  return enqueue(async () => {
+    const store = await load();
+    delete store.productPhotos[slug];
+    await persist(store);
   });
 }
 
