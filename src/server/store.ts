@@ -26,6 +26,7 @@ import {
 import { seedReviews } from "@/data/seed-reviews";
 import { DEFAULT_THEME_ID, isThemeId } from "@/lib/themes";
 import { verifySignature } from "@/server/payments/gateway";
+import { isMediaKey, type MediaKey, type MediaMap } from "@/lib/media";
 
 export interface StoreProduct extends Product {
   /** units on hand; the storefront still gates on `inStock` */
@@ -42,6 +43,8 @@ export interface Store {
   orders: StoredOrder[];
   reviews: Review[];
   settings: StoreSettings;
+  /** admin-uploaded homepage imagery, keyed by MediaKey; see src/lib/media.ts */
+  media: MediaMap;
   meta: { seededAt: string; version: number };
 }
 
@@ -72,6 +75,7 @@ function seed(): Store {
     orders: [],
     reviews: seedReviews(),
     settings: defaultSettings(),
+    media: {},
     meta: { seededAt: new Date().toISOString(), version: STORE_VERSION },
   };
 }
@@ -90,6 +94,9 @@ function normalise(store: Store): Store {
   if (!Array.isArray(store.reviews)) store.reviews = seedReviews();
   if (!store.settings || !isThemeId(store.settings.theme)) {
     store.settings = defaultSettings();
+  }
+  if (!store.media || typeof store.media !== "object") {
+    store.media = {};
   }
   return store;
 }
@@ -146,6 +153,35 @@ export function updateSettings(
     }
     await persist(store);
     return store.settings;
+  });
+}
+
+export function getMedia(): Promise<MediaMap> {
+  return getStore().then((s) => s.media);
+}
+
+export function setMediaItem(
+  key: MediaKey,
+  data: string,
+  contentType: string,
+): Promise<MediaMap> {
+  return enqueue(async () => {
+    if (!isMediaKey(key)) {
+      throw new OrderError("Unknown media slot.", "bad_request");
+    }
+    const store = await load();
+    store.media[key] = { data, contentType, updatedAt: new Date().toISOString() };
+    await persist(store);
+    return store.media;
+  });
+}
+
+export function clearMediaItem(key: MediaKey): Promise<MediaMap> {
+  return enqueue(async () => {
+    const store = await load();
+    delete store.media[key];
+    await persist(store);
+    return store.media;
   });
 }
 

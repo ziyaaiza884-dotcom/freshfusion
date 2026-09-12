@@ -3,6 +3,8 @@ import {
   getBestSellers,
   getNewArrivals,
 } from "@/server/products";
+import { getMedia } from "@/server/store";
+import { MEDIA_SLOTS, mediaSrc } from "@/lib/media";
 import { Hero } from "@/components/home/hero";
 import { Testimonials } from "@/components/home/testimonials";
 import { TrustBadges } from "@/components/trust-badges";
@@ -13,19 +15,25 @@ import { Reveal } from "@/components/ui/motion";
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  const [all, best, fresh] = await Promise.all([
+  const [all, best, fresh, media] = await Promise.all([
     getAllProducts(),
     getBestSellers(),
     getNewArrivals(),
+    getMedia(),
   ]);
 
   const newSpicePacks = fresh.filter((p) => p.category !== "pickles");
   const spotlight = all.filter((p) => p.isHot).slice(0, 6);
   const bestPickles = best.filter((p) => p.category === "pickles");
 
+  const heroSrc = media["hero-bg"] ? mediaSrc("hero-bg", media) : undefined;
+  const tileSrcs = MEDIA_SLOTS.slice(1).map((slot) =>
+    media[slot.key] ? mediaSrc(slot.key, media) : undefined,
+  );
+
   return (
     <>
-      <Hero />
+      <Hero heroSrc={heroSrc} tileSrcs={tileSrcs} />
 
       <Section className="py-6">
         <Reveal>

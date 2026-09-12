@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
   BarChart3,
+  ImageIcon,
   LogOut,
   Package,
   Palette,
@@ -19,6 +20,7 @@ const NAV = [
   { href: "/admin/inventory", label: "Inventory", icon: Package },
   { href: "/admin/orders", label: "Orders", icon: ShoppingCart },
   { href: "/admin/reviews", label: "Reviews", icon: Star },
+  { href: "/admin/media", label: "Homepage media", icon: ImageIcon },
   { href: "/admin/settings", label: "Settings", icon: Palette },
 ];
 

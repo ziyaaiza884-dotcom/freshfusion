@@ -7,6 +7,9 @@ import { ArrowRight } from "lucide-react";
 import { ButtonLink } from "@/components/ui/button";
 import { easeOutExpo } from "@/components/ui/motion";
 import { ProductArt } from "@/components/product-art";
+import { MEDIA_SLOTS } from "@/lib/media";
+
+const HERO_DEFAULT = MEDIA_SLOTS[0].default;
 
 const chips = [
   { label: "All pickles", href: "/shop?category=pickles" },
@@ -45,12 +48,20 @@ const jars = [
   },
 ];
 
-export function Hero() {
+export function Hero({
+  heroSrc,
+  tileSrcs,
+}: {
+  /** admin-uploaded hero background, if any — falls back to the bundled photo */
+  heroSrc?: string;
+  /** admin-uploaded tile photos, indexed 0-3 — falls back to each tile's bundled photo */
+  tileSrcs?: (string | undefined)[];
+} = {}) {
   return (
     <section className="relative isolate overflow-hidden">
       <div className="absolute inset-0 -z-30">
         <Image
-          src="/images/beef-pickle-hero.jpg"
+          src={heroSrc ?? HERO_DEFAULT}
           alt="A jar of Fresh Fusion beef pickle on a wooden kitchen counter, surrounded by whole spices"
           fill
           priority
@@ -139,37 +150,42 @@ export function Hero() {
 
         <div className="relative mx-auto grid w-full max-w-sm grid-cols-2 gap-4 lg:max-w-none">
           <div className="ff-lamplight" aria-hidden />
-          {jars.map((j, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 30, rotate: i % 2 ? 3 : -3 }}
-              animate={{ opacity: 1, y: 0, rotate: i % 2 ? 1.5 : -1.5 }}
-              transition={{
-                duration: 0.7,
-                ease: easeOutExpo,
-                delay: 0.2 + j.delay,
-              }}
-              whileHover={{ y: -6, rotate: 0 }}
-              className="aspect-square rounded-2xl border border-border shadow-[0_20px_45px_-20px_var(--glow-soft)] transition-shadow duration-300 hover:shadow-[0_24px_55px_-16px_var(--glow)]"
-            >
-              {j.photo ? (
-                <Image
-                  src={j.photo}
-                  alt={j.alt ?? "Fresh Fusion product"}
-                  width={300}
-                  height={300}
-                  className="h-full w-full rounded-2xl object-cover"
-                />
-              ) : (
-                <ProductArt
-                  art={j.art}
-                  category={j.category}
-                  className="h-full w-full rounded-2xl"
-                  label="Fresh Fusion jar"
-                />
-              )}
-            </motion.div>
-          ))}
+          {jars.map((j, i) => {
+            const custom = tileSrcs?.[i];
+            const src = custom ?? j.photo;
+            const alt = custom ? "Fresh Fusion product photo" : j.alt;
+            return (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 30, rotate: i % 2 ? 3 : -3 }}
+                animate={{ opacity: 1, y: 0, rotate: i % 2 ? 1.5 : -1.5 }}
+                transition={{
+                  duration: 0.7,
+                  ease: easeOutExpo,
+                  delay: 0.2 + j.delay,
+                }}
+                whileHover={{ y: -6, rotate: 0 }}
+                className="aspect-square rounded-2xl border border-border shadow-[0_20px_45px_-20px_var(--glow-soft)] transition-shadow duration-300 hover:shadow-[0_24px_55px_-16px_var(--glow)]"
+              >
+                {src ? (
+                  <Image
+                    src={src}
+                    alt={alt ?? "Fresh Fusion product"}
+                    width={300}
+                    height={300}
+                    className="h-full w-full rounded-2xl object-cover"
+                  />
+                ) : (
+                  <ProductArt
+                    art={j.art}
+                    category={j.category}
+                    className="h-full w-full rounded-2xl"
+                    label="Fresh Fusion jar"
+                  />
+                )}
+              </motion.div>
+            );
+          })}
         </div>
       </div>
     </section>
