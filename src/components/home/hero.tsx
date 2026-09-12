@@ -36,7 +36,13 @@ const jars = [
     photo: "/images/4suares/nuts-grid.jpg",
     alt: "Cashews, raisins, dates and home-made chutneys",
   },
-  { art: "from-[#8a3d1f] to-[#c25f2c]", category: "specialty" as const, delay: 0.24 },
+  {
+    art: "from-[#8a3d1f] to-[#c25f2c]",
+    category: "pickles" as const,
+    delay: 0.24,
+    photo: "/images/4suares/pickle-grid.jpg",
+    alt: "Fresh Fusion pickle jars — garlic, mango, fish, lemon, baby mango and veg mix",
+  },
 ];
 
 export function Hero() {
