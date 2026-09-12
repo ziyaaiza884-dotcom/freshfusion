@@ -26,10 +26,16 @@ const jars = [
     art: "from-[#c9a227] to-[#e6c84f]",
     category: "spices" as const,
     delay: 0.08,
-    photo: "/images/4suares/spices-grid.jpg",
+    photo: "/images/4suares/spices-grid-2.jpg",
     alt: "Whole Kerala spices — pepper, cardamom, cloves and cinnamon",
   },
-  { art: "from-[#3f6b4c] to-[#7aa85f]", category: "spices" as const, delay: 0.16 },
+  {
+    art: "from-[#3f6b4c] to-[#7aa85f]",
+    category: "specialty" as const,
+    delay: 0.16,
+    photo: "/images/4suares/nuts-grid.jpg",
+    alt: "Cashews, raisins, dates and home-made chutneys",
+  },
   { art: "from-[#8a3d1f] to-[#c25f2c]", category: "specialty" as const, delay: 0.24 },
 ];
 
