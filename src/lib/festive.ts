@@ -1,27 +1,58 @@
 /**
  * Per-theme festive dressing for the homepage hero: a greeting line, an
- * ambient particle style (stars / snow / petals / sparks), and which corner
- * illustration to draw. Deliberately keyed off the theme id, not the theme's
- * `dark` flag — each festival has its own character, not just a palette.
- * "everyday" (the house default) intentionally has no entry: no festival
- * dressing on the plain storefront.
+ * ambient particle style (stars / snow / petals / sparks), and a real photo
+ * for the corner badge — not illustrated art. Deliberately keyed off the
+ * theme id, not the theme's `dark` flag — each festival has its own
+ * character, not just a palette. "everyday" (the house default)
+ * intentionally has no entry: no festival dressing on the plain storefront.
  */
 export type ParticleKind = "star" | "snow" | "petal" | "spark";
-export type FestiveIcon = "mosque" | "diya" | "pookalam" | "tree" | "tulip";
 
 export interface FestiveConfig {
   greeting: string;
   particle: ParticleKind;
-  icon: FestiveIcon;
+  /** a real photo for the corner badge, under public/images/festive/ */
+  photo: string;
+  photoAlt: string;
 }
 
 export const FESTIVE: Partial<Record<string, FestiveConfig>> = {
-  eid: { greeting: "Eid Mubarak", particle: "star", icon: "mosque" },
-  ramadan: { greeting: "Ramadan Mubarak", particle: "star", icon: "mosque" },
-  diwali: { greeting: "Happy Diwali", particle: "spark", icon: "diya" },
-  onam: { greeting: "Onam Ashamsakal", particle: "petal", icon: "pookalam" },
-  christmas: { greeting: "Merry Christmas", particle: "snow", icon: "tree" },
-  nowruz: { greeting: "Nowruz Pirouz", particle: "petal", icon: "tulip" },
+  eid: {
+    greeting: "Eid Mubarak",
+    particle: "star",
+    photo: "/images/festive/eid.jpg",
+    photoAlt: "Crescent moon and star atop a mosque",
+  },
+  ramadan: {
+    greeting: "Ramadan Mubarak",
+    particle: "star",
+    photo: "/images/festive/ramadan.jpg",
+    photoAlt: "A lit fanous lantern at dusk",
+  },
+  diwali: {
+    greeting: "Happy Diwali",
+    particle: "spark",
+    photo: "/images/festive/diwali.jpg",
+    photoAlt: "Lit diyas surrounded by flower petals",
+  },
+  onam: {
+    greeting: "Onam Ashamsakal",
+    particle: "petal",
+    photo: "/images/festive/onam.jpg",
+    photoAlt: "Fresh pookalam flowers",
+  },
+  christmas: {
+    greeting: "Merry Christmas",
+    particle: "snow",
+    photo: "/images/festive/christmas.jpg",
+    photoAlt: "A Christmas ornament on a lit tree",
+  },
+  nowruz: {
+    greeting: "Nowruz Pirouz",
+    particle: "petal",
+    photo: "/images/festive/nowruz.jpg",
+    photoAlt: "A pink tulip in bloom",
+  },
 };
 
 export function festiveFor(themeId: string): FestiveConfig | undefined {

@@ -242,15 +242,6 @@ h1, h2, h3, h4 {
   }
 }
 
-@keyframes ff-sway {
-  0%, 100% {
-    transform: rotate(-3deg);
-  }
-  50% {
-    transform: rotate(3deg);
-  }
-}
-
 .ff-particle {
   position: absolute;
   border-radius: 999px;
@@ -287,14 +278,22 @@ h1, h2, h3, h4 {
   animation-iteration-count: infinite;
 }
 
-.ff-festive-icon {
-  animation: ff-sway 5s ease-in-out infinite;
-  transform-origin: 50% 100%;
+.ff-festive-badge {
+  animation: ff-badge-breathe 5s ease-in-out infinite;
+}
+
+@keyframes ff-badge-breathe {
+  0%, 100% {
+    box-shadow: 0 8px 24px -6px rgba(0, 0, 0, 0.6), 0 0 0 0 var(--glow-soft);
+  }
+  50% {
+    box-shadow: 0 8px 24px -6px rgba(0, 0, 0, 0.6), 0 0 16px 4px var(--glow-soft);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .ff-particle,
-  .ff-festive-icon {
+  .ff-festive-badge {
     animation: none !important;
   }
 }
