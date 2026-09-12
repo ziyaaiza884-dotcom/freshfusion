@@ -10,6 +10,7 @@ export default async function AdminMediaPage() {
     key: slot.key,
     label: slot.label,
     hint: slot.hint,
+    recommended: slot.recommended,
     src: mediaSrc(slot.key, media),
     isCustom: Boolean(media[slot.key]),
   }));

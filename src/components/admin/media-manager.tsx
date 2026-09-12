@@ -8,6 +8,7 @@ export interface MediaSlotView {
   key: string;
   label: string;
   hint: string;
+  recommended: string;
   src: string;
   isCustom: boolean;
 }
@@ -146,6 +147,9 @@ function MediaSlotCard({ slot }: { slot: MediaSlotView }) {
           </button>
         )}
       </div>
+      <p className="mt-2 text-[11px] text-muted-foreground">
+        Recommended: {slot.recommended}
+      </p>
     </div>
   );
 }

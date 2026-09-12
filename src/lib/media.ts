@@ -10,30 +10,35 @@ export const MEDIA_SLOTS = [
     label: "Hero background photo",
     hint: "The big full-width photo behind the homepage headline.",
     default: "/images/beef-pickle-hero.jpg",
+    recommended: "2400 × 1600px (3:2 landscape)",
   },
   {
     key: "hero-tile-1",
     label: "Tile 1",
     hint: "Top-left square in the hero's 4-photo grid.",
     default: "/images/4suares/pickle.png",
+    recommended: "900 × 900px (square)",
   },
   {
     key: "hero-tile-2",
     label: "Tile 2",
     hint: "Top-right square in the hero's 4-photo grid.",
     default: "/images/4suares/spices-grid-2.jpg",
+    recommended: "900 × 900px (square)",
   },
   {
     key: "hero-tile-3",
     label: "Tile 3",
     hint: "Bottom-left square in the hero's 4-photo grid.",
     default: "/images/4suares/nuts-grid.jpg",
+    recommended: "900 × 900px (square)",
   },
   {
     key: "hero-tile-4",
     label: "Tile 4",
     hint: "Bottom-right square in the hero's 4-photo grid.",
     default: "/images/4suares/pickle-grid.jpg",
+    recommended: "900 × 900px (square)",
   },
 ] as const;
 
