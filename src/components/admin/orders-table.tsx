@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { ChevronDown, Loader2 } from "lucide-react";
+import { ChevronDown, Loader2, MessageCircle } from "lucide-react";
 import {
   ORDER_FLOW,
   ORDER_STATUS_LABELS,
@@ -12,16 +12,19 @@ import {
   type StoredOrder,
 } from "@/lib/orders";
 import { formatPrice } from "@/lib/format";
+import { customerWhatsAppUrl } from "@/lib/contact";
 import { cn } from "@/lib/utils";
 
 const STATUS_OPTIONS: OrderStatus[] = [...ORDER_FLOW, "cancelled"];
 
-const badgeTone: Record<OrderStatus, string> = {
-  placed: "bg-surface-muted text-muted-foreground",
-  packing: "bg-[#fff2e0] text-[#8a5320]",
-  out_for_delivery: "bg-[#e6efe6] text-primary-strong",
-  delivered: "bg-primary/10 text-primary",
-  cancelled: "bg-[#f6e4e4] text-accent",
+/** the status <select> itself is tinted to match — no separate read-only
+ *  badge needed alongside it, which used to just repeat the same word */
+const selectTone: Record<OrderStatus, string> = {
+  placed: "border-border bg-surface-muted text-foreground",
+  packing: "border-[#f0d4a8] bg-[#fff2e0] text-[#8a5320]",
+  out_for_delivery: "border-[#bcd8bc] bg-[#e6efe6] text-primary-strong",
+  delivered: "border-primary/30 bg-primary/10 text-primary",
+  cancelled: "border-[#eecccc] bg-[#f6e4e4] text-accent",
 };
 
 function paymentLabel(p: PaymentInfo): { text: string; tone: string } {
@@ -116,8 +119,8 @@ function OrderRow({ order }: { order: StoredOrder }) {
   });
 
   return (
-    <div className="rounded-lg border border-border bg-surface">
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 p-4">
+    <div className="rounded-lg border border-border bg-surface transition-shadow hover:shadow-sm">
+      <div className="grid grid-cols-[auto_1fr] items-center gap-x-4 gap-y-3 p-4 sm:grid-cols-[auto_1fr_auto_auto_auto]">
         <button
           type="button"
           onClick={() => setOpen((v) => !v)}
@@ -126,7 +129,7 @@ function OrderRow({ order }: { order: StoredOrder }) {
         >
           <ChevronDown
             className={cn(
-              "h-4 w-4 text-muted-foreground transition-transform",
+              "h-4 w-4 shrink-0 text-muted-foreground transition-transform",
               open && "rotate-180",
             )}
           />
@@ -136,11 +139,18 @@ function OrderRow({ order }: { order: StoredOrder }) {
           </span>
         </button>
 
-        <span className="text-sm text-muted-foreground">
-          {order.customer.name}
-        </span>
+        <div className="flex min-w-0 flex-wrap items-center gap-2">
+          <span className="truncate text-sm font-medium text-foreground">
+            {order.customer.name}
+          </span>
+          {order.source === "whatsapp" && (
+            <span className="shrink-0 rounded-full bg-[#25D366]/15 px-2 py-0.5 text-[11px] font-semibold text-[#128C4A]">
+              WhatsApp
+            </span>
+          )}
+        </div>
 
-        <span className="ml-auto font-semibold tabular-nums">
+        <span className="col-start-2 row-start-2 font-semibold tabular-nums sm:col-auto sm:row-auto">
           {formatPrice(order.totals.total)}
         </span>
 
@@ -149,7 +159,7 @@ function OrderRow({ order }: { order: StoredOrder }) {
           return (
             <span
               className={cn(
-                "rounded-full px-2.5 py-0.5 text-xs font-semibold",
+                "col-start-2 row-start-3 w-fit rounded-full px-2.5 py-0.5 text-xs font-semibold sm:col-auto sm:row-auto",
                 p.tone,
               )}
               title={`${payment.method.toUpperCase()} · ${PAYMENT_STATUS_LABELS[payment.status]}`}
@@ -159,21 +169,15 @@ function OrderRow({ order }: { order: StoredOrder }) {
           );
         })()}
 
-        <span
-          className={cn(
-            "rounded-full px-2.5 py-0.5 text-xs font-semibold",
-            badgeTone[status],
-          )}
-        >
-          {ORDER_STATUS_LABELS[status]}
-        </span>
-
-        <div className="flex items-center gap-2">
+        <div className="col-start-2 row-start-4 flex items-center gap-2 sm:col-auto sm:row-auto">
           <select
             value={status}
             disabled={saving}
             onChange={(e) => changeStatus(e.target.value as OrderStatus)}
-            className="h-9 rounded-md border border-border bg-surface px-2 text-xs focus:border-primary focus:outline-none"
+            className={cn(
+              "h-9 rounded-md border px-2 text-xs font-semibold focus:border-primary focus:outline-none",
+              selectTone[status],
+            )}
             aria-label={`Status for ${order.id}`}
           >
             {STATUS_OPTIONS.map((s) => (
@@ -294,6 +298,19 @@ function OrderRow({ order }: { order: StoredOrder }) {
               <p className="mt-2 text-xs italic text-muted-foreground">
                 Gift note: “{order.giftNote}”
               </p>
+            )}
+            {status === "delivered" && (
+              <a
+                href={customerWhatsAppUrl(
+                  order.customer.phone,
+                  `Hi ${order.customer.name.split(" ")[0]}! Thanks so much for your order from Fresh Fusion 🌿 Hope you enjoy it — we'd love to hear what you think, and see you again soon!`,
+                )}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-2 inline-flex h-8 items-center gap-1.5 rounded-md bg-[#25D366]/10 px-3 text-xs font-semibold text-[#128C4A] hover:bg-[#25D366] hover:text-white"
+              >
+                <MessageCircle className="h-3.5 w-3.5" /> Send thank-you on WhatsApp
+              </a>
             )}
 
             <h3 className="mt-4 text-xs font-semibold uppercase tracking-wide text-muted-foreground">

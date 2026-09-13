@@ -3,6 +3,7 @@ import { getDb } from "@/server/mongo";
 import { products as seedProducts } from "@/data/catalog";
 import type { Product } from "@/data/types";
 import {
+  etaWindow,
   generateOrderId,
   ORDER_STATUS_LABELS,
   PAYMENT_METHOD_LABELS,
@@ -27,6 +28,7 @@ import { seedReviews } from "@/data/seed-reviews";
 import { DEFAULT_THEME_ID, isThemeId } from "@/lib/themes";
 import { verifySignature } from "@/server/payments/gateway";
 import { isMediaKey, type MediaItem, type MediaKey, type MediaMap } from "@/lib/media";
+import type { StoredCustomer } from "@/lib/customers";
 
 export interface StoreProduct extends Product {
   /** units on hand; the storefront still gates on `inStock` */
@@ -47,6 +49,8 @@ export interface Store {
   media: MediaMap;
   /** admin-uploaded per-product photos, keyed by product slug */
   productPhotos: Record<string, MediaItem>;
+  /** registered customer accounts (email + password login) */
+  customers: StoredCustomer[];
   meta: { seededAt: string; version: number };
 }
 
@@ -79,6 +83,7 @@ function seed(): Store {
     settings: defaultSettings(),
     media: {},
     productPhotos: {},
+    customers: [],
     meta: { seededAt: new Date().toISOString(), version: STORE_VERSION },
   };
 }
@@ -114,6 +119,9 @@ function normalise(store: Store): Store {
   }
   if (!store.productPhotos || typeof store.productPhotos !== "object") {
     store.productPhotos = {};
+  }
+  if (!Array.isArray(store.customers)) {
+    store.customers = [];
   }
   return store;
 }
@@ -243,6 +251,145 @@ export function clearProductPhoto(slug: string): Promise<void> {
     const store = await load();
     delete store.productPhotos[slug];
     await persist(store);
+  });
+}
+
+export function findCustomerByEmail(
+  email: string,
+): Promise<StoredCustomer | undefined> {
+  const lower = email.toLowerCase();
+  return getStore().then((s) => s.customers.find((c) => c.email === lower));
+}
+
+export function getCustomerById(
+  id: string,
+): Promise<StoredCustomer | undefined> {
+  return getStore().then((s) => s.customers.find((c) => c.id === id));
+}
+
+export function createCustomer(input: {
+  name: string;
+  email: string;
+  phone?: string;
+  passwordHash: string;
+  salt: string;
+}): Promise<StoredCustomer> {
+  return enqueue(async () => {
+    const store = await load();
+    const email = input.email.toLowerCase();
+    if (store.customers.some((c) => c.email === email)) {
+      throw new OrderError(
+        "An account with this email already exists.",
+        "bad_request",
+      );
+    }
+    const customer: StoredCustomer = {
+      id: `cus_${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`,
+      name: input.name.trim(),
+      email,
+      phone: input.phone?.trim() || undefined,
+      passwordHash: input.passwordHash,
+      salt: input.salt,
+      createdAt: new Date().toISOString(),
+    };
+    store.customers.push(customer);
+    await persist(store);
+    return customer;
+  });
+}
+
+/** orders belonging to a signed-in customer — matched by customerId when
+ *  present (orders placed while logged in), falling back to email match so
+ *  orders placed as a guest before signing up still show up. */
+export function getOrdersForCustomer(
+  customerId: string,
+  email: string,
+): Promise<StoredOrder[]> {
+  const lower = email.toLowerCase();
+  return getStore().then((s) =>
+    [...s.orders]
+      .filter(
+        (o) =>
+          o.customerId === customerId ||
+          o.customer.email.toLowerCase() === lower,
+      )
+      .sort((a, b) => +new Date(b.placedAt) - +new Date(a.placedAt)),
+  );
+}
+
+export interface CustomerReportEntry {
+  key: string;
+  name: string;
+  phone: string;
+  email: string;
+  orderCount: number;
+  totalSpent: number;
+  lastOrderAt: string;
+  sources: ("web" | "whatsapp")[];
+  hasAccount: boolean;
+}
+
+/** one row per real-world customer, aggregated across every order —
+ *  whether placed through checkout or logged manually from WhatsApp —
+ *  plus registered accounts that haven't ordered yet. */
+export function getCustomerReport(): Promise<CustomerReportEntry[]> {
+  return getStore().then((s) => {
+    const accountsByEmail = new Map(
+      s.customers.map((c) => [c.email.toLowerCase(), c]),
+    );
+    const map = new Map<string, CustomerReportEntry>();
+
+    for (const o of s.orders) {
+      const email = o.customer.email?.toLowerCase() || "";
+      const key = email || o.customer.phone || o.id;
+      const src: "web" | "whatsapp" = o.source ?? "web";
+      const existing = map.get(key);
+      if (existing) {
+        existing.orderCount += 1;
+        existing.totalSpent += o.totals.total;
+        if (new Date(o.placedAt) > new Date(existing.lastOrderAt)) {
+          existing.lastOrderAt = o.placedAt;
+          existing.name = o.customer.name;
+        }
+        if (!existing.sources.includes(src)) existing.sources.push(src);
+      } else {
+        map.set(key, {
+          key,
+          name: o.customer.name,
+          phone: o.customer.phone,
+          email: o.customer.email,
+          orderCount: 1,
+          totalSpent: o.totals.total,
+          lastOrderAt: o.placedAt,
+          sources: [src],
+          hasAccount: accountsByEmail.has(email),
+        });
+      }
+    }
+
+    // registered accounts with no orders yet still show up
+    for (const c of s.customers) {
+      const email = c.email.toLowerCase();
+      if (map.has(email)) {
+        map.get(email)!.hasAccount = true;
+        continue;
+      }
+      map.set(email, {
+        key: email,
+        name: c.name,
+        phone: c.phone ?? "",
+        email: c.email,
+        orderCount: 0,
+        totalSpent: 0,
+        lastOrderAt: c.createdAt,
+        sources: [],
+        hasAccount: true,
+      });
+    }
+
+    return [...map.values()].sort(
+      (a, b) => +new Date(b.lastOrderAt) - +new Date(a.lastOrderAt),
+    );
   });
 }
 
@@ -453,12 +600,14 @@ export function createOrder(input: CreateOrderInput): Promise<StoredOrder> {
     const store = await load();
     const now = new Date().toISOString();
 
-    // strip client-controlled fields we recompute (`items`, `totals`) or
-    // consume separately (`discountCode`)
-    const { totals: _t, discountCode: _d, items: _i, ...rest } = input;
+    // strip client-controlled fields we recompute (`items`, `totals`),
+    // consume separately (`discountCode`), or never trust from the client
+    // at all (`source` — a checkout order is always "web")
+    const { totals: _t, discountCode: _d, items: _i, source: _s, ...rest } = input;
     void _t;
     void _d;
     void _i;
+    void _s;
 
     if (!input.items?.length) {
       throw new OrderError("Cart is empty.", "empty");
@@ -512,6 +661,95 @@ export function createOrder(input: CreateOrderInput): Promise<StoredOrder> {
       placedAt: input.placedAt || now,
       paymentMethod: PAYMENT_METHOD_LABELS[input.payment.method],
       payment,
+      source: "web",
+      status: "placed",
+      statusHistory: [{ status: "placed", at: now }],
+    };
+
+    for (const line of order.items) {
+      const p = store.products.find((x) => x.slug === line.slug);
+      if (p) {
+        p.stockQty = Math.max(0, p.stockQty - line.qty);
+        if (p.stockQty === 0) p.inStock = false;
+      }
+    }
+    store.orders.push(order);
+    await persist(store);
+    return order;
+  });
+}
+
+export interface ManualOrderInput {
+  customer: { name: string; phone: string; email?: string };
+  address?: Partial<PlacedOrder["address"]>;
+  items: { slug: string; qty: number }[];
+  paymentMethod: PaymentMethod;
+  /** admin is confirming payment already happened (e.g. UPI over WhatsApp) */
+  paid: boolean;
+  notes?: string;
+}
+
+/** logs an order an admin took over WhatsApp (or in person) — same stock
+ *  and totals handling as a normal checkout, but skipping the cart/gateway
+ *  flow since the admin is entering it directly. */
+export function createManualOrder(input: ManualOrderInput): Promise<StoredOrder> {
+  return enqueue(async () => {
+    const store = await load();
+    const now = new Date().toISOString();
+
+    const name = input.customer?.name?.trim();
+    const phone = input.customer?.phone?.trim();
+    if (!name) throw new OrderError("Customer name is required.", "bad_request");
+    if (!phone) throw new OrderError("Customer phone is required.", "bad_request");
+    if (!input.items?.length) throw new OrderError("Add at least one item.", "empty");
+
+    const lines: CartLine[] = input.items.map((line) => {
+      const p = store.products.find((x) => x.slug === line.slug);
+      if (!p) throw new OrderError(`Unknown product: ${line.slug}`, "bad_request");
+      const qty = Number(line.qty);
+      if (!Number.isInteger(qty) || qty < 1 || qty > MAX_QTY_PER_LINE) {
+        throw new OrderError(`Invalid quantity for ${p.name}.`, "bad_request");
+      }
+      return {
+        slug: p.slug,
+        name: p.name,
+        price: p.price,
+        qty,
+        art: p.art,
+        weightLabel: `${p.weight} ${p.unit}`,
+      };
+    });
+
+    const totals = computeTotals({ ...emptyCart, items: lines, discountCode: null });
+    const eta = etaWindow();
+
+    let id = generateOrderId();
+    while (store.orders.some((o) => o.id === id)) id = generateOrderId();
+
+    const order: StoredOrder = {
+      id,
+      placedAt: now,
+      items: lines,
+      totals,
+      customer: { name, phone, email: input.customer.email?.trim() ?? "" },
+      address: {
+        line1: input.address?.line1 ?? "",
+        line2: input.address?.line2 ?? "",
+        pincode: input.address?.pincode ?? "",
+        city: input.address?.city ?? "",
+        state: input.address?.state ?? "",
+      },
+      deliverySlot: "Arranged over WhatsApp",
+      paymentMethod: PAYMENT_METHOD_LABELS[input.paymentMethod],
+      payment: {
+        method: input.paymentMethod,
+        status: input.paid ? "paid" : "pending",
+        ...(input.paid ? { paidAt: now } : {}),
+      },
+      giftNote: input.notes?.trim() ?? "",
+      etaFrom: eta.from,
+      etaTo: eta.to,
+      source: "whatsapp",
       status: "placed",
       statusHistory: [{ status: "placed", at: now }],
     };
@@ -547,12 +785,16 @@ export function markPaymentCollected(id: string): Promise<StoredOrder> {
   });
 }
 
-/** back-fill `payment` on orders written before slice 3 */
+/** back-fill fields on orders written before they existed */
 function migrateOrder(o: StoredOrder): StoredOrder {
-  if (o.payment) return o;
+  if (o.payment) {
+    if (o.source) return o;
+    return { ...o, source: "web" };
+  }
   return {
     ...o,
     payment: { method: "cod", status: "paid" },
+    source: o.source ?? "web",
   };
 }
 

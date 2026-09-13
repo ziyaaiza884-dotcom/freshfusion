@@ -51,6 +51,12 @@ export interface PlacedOrder {
   /** window shown on the confirmation screen */
   etaFrom: string;
   etaTo: string;
+  /** how the order was taken — the storefront checkout, or logged manually
+   *  by an admin from a WhatsApp conversation. Defaults to "web" for any
+   *  order placed before this field existed. */
+  source?: "web" | "whatsapp";
+  /** signed-in customer this order belongs to, if any (see lib/customers.ts) */
+  customerId?: string;
 }
 
 export type OrderStatus =

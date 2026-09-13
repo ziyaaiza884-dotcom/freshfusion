@@ -11,6 +11,7 @@ import {
   ShoppingCart,
   Sprout,
   Star,
+  Users,
 } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
@@ -19,6 +20,7 @@ const NAV = [
   { href: "/admin", label: "Overview", icon: BarChart3, exact: true },
   { href: "/admin/inventory", label: "Inventory", icon: Package },
   { href: "/admin/orders", label: "Orders", icon: ShoppingCart },
+  { href: "/admin/customers", label: "Customers", icon: Users },
   { href: "/admin/reviews", label: "Reviews", icon: Star },
   { href: "/admin/media", label: "Homepage media", icon: ImageIcon },
   { href: "/admin/settings", label: "Settings", icon: Palette },

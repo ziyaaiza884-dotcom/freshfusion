@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
 import { createOrder, OrderError, type CreateOrderInput } from "@/server/store";
+import { CUSTOMER_COOKIE, verifyCustomerToken } from "@/lib/customer-auth";
 
 export const runtime = "nodejs";
 
@@ -37,7 +39,15 @@ export async function POST(req: Request) {
   }
 
   try {
-    const order = await createOrder(body as CreateOrderInput);
+    // never trust a client-sent customerId — resolve it from the signed
+    // session cookie instead, so an order can't be attributed to someone
+    // else's account
+    const jar = await cookies();
+    const customerId = await verifyCustomerToken(jar.get(CUSTOMER_COOKIE)?.value);
+    const order = await createOrder({
+      ...(body as CreateOrderInput),
+      customerId: customerId ?? undefined,
+    });
     return NextResponse.json({ order }, { status: 201 });
   } catch (err) {
     if (err instanceof OrderError) {

@@ -1,4 +1,5 @@
 import { CartProvider } from "@/context/cart-context";
+import { AuthProvider } from "@/context/auth-context";
 import { ProductPhotosProvider } from "@/context/product-photos-context";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
@@ -24,12 +25,14 @@ export default async function StoreLayout({
       className="flex min-h-screen flex-col bg-background text-foreground"
     >
       <CartProvider>
-        <ProductPhotosProvider>
-          <Header />
-          <PageTransition>{children}</PageTransition>
-          <Footer />
-          <WhatsAppButton />
-        </ProductPhotosProvider>
+        <AuthProvider>
+          <ProductPhotosProvider>
+            <Header />
+            <PageTransition>{children}</PageTransition>
+            <Footer />
+            <WhatsAppButton />
+          </ProductPhotosProvider>
+        </AuthProvider>
       </CartProvider>
     </div>
   );

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import {
   Banknote,
@@ -12,6 +12,7 @@ import {
   Wallet,
 } from "lucide-react";
 import { useCart } from "@/context/cart-context";
+import { useAuth } from "@/context/auth-context";
 import { formatPrice } from "@/lib/format";
 import {
   deliverySlots,
@@ -73,6 +74,7 @@ const PAYMENTS = [
 export function CheckoutView() {
   const router = useRouter();
   const { state, totals, dispatch, hydrated } = useCart();
+  const { customer } = useAuth();
   // no slot picker in the UI — just take the earliest available slot
   const defaultSlot = useMemo(() => deliverySlots()[0] ?? "", []);
 
@@ -87,6 +89,19 @@ export function CheckoutView() {
     state: "",
     payment: "upi",
   });
+
+  // prefill contact details for a signed-in customer, without clobbering
+  // anything they've already typed
+  useEffect(() => {
+    if (!customer) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- syncing form fields from the signed-in session, not internal component state
+    setForm((f) => ({
+      ...f,
+      name: f.name || customer.name,
+      email: f.email || customer.email,
+      phone: f.phone || customer.phone || "",
+    }));
+  }, [customer]);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [placing, setPlacing] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -164,6 +179,7 @@ export function CheckoutView() {
       },
       deliverySlot: defaultSlot,
       giftNote: "",
+      customerId: customer?.id,
       discountCode: state.discountCode,
       etaFrom: eta.from,
       etaTo: eta.to,

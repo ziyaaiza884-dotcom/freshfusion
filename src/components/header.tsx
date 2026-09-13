@@ -4,9 +4,10 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
-import { Menu, ShoppingBag, X } from "lucide-react";
+import { Menu, ShoppingBag, User, X } from "lucide-react";
 import { useState } from "react";
 import { useCart } from "@/context/cart-context";
+import { useAuth } from "@/context/auth-context";
 import { cn } from "@/lib/utils";
 
 const NAV = [
@@ -21,6 +22,7 @@ const NAV = [
 export function Header() {
   const pathname = usePathname();
   const { totals, lastAddedAt, hydrated } = useCart();
+  const { customer } = useAuth();
   const [open, setOpen] = useState(false);
 
   return (
@@ -58,6 +60,13 @@ export function Header() {
         </nav>
 
         <div className="ml-auto flex items-center gap-1">
+          <Link
+            href={customer ? "/account" : "/account/login"}
+            aria-label={customer ? `Account, ${customer.name}` : "Sign in"}
+            className="grid h-11 w-11 place-items-center rounded-md text-foreground transition-colors hover:bg-surface-muted"
+          >
+            <User className="h-5 w-5" />
+          </Link>
           <Link
             href="/cart"
             aria-label={`Cart, ${totals.count} item${totals.count === 1 ? "" : "s"}`}
