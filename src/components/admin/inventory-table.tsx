@@ -313,7 +313,7 @@ function InventoryRow({
           type="text"
           value={row.name}
           onChange={(e) => set("name", e.target.value)}
-          className="w-full min-w-[160px] rounded-md border border-transparent bg-transparent px-1.5 py-1 font-medium hover:border-border focus:border-primary focus:bg-surface focus:outline-none"
+          className="w-full min-w-[160px] rounded-md border border-border bg-surface px-1.5 py-1 font-medium hover:border-primary/50 focus:border-primary focus:outline-none"
         />
         <p className="mt-0.5 px-1.5 text-xs text-muted-foreground">
           {CATEGORY_LABELS[product.category]}
