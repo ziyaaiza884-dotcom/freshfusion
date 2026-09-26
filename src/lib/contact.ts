@@ -5,6 +5,12 @@ export const CONTACT_WHATSAPP_URL =
   "https://wa.me/918714046986?text=" +
   encodeURIComponent("Hi Fresh Fusion! I have a question about your pickles.");
 
+/** a wa.me link to the *shop's own* number with a pre-filled message — used
+ *  to hand off a checkout order to WhatsApp instead of an online payment */
+export function shopOrderWhatsAppUrl(message: string): string {
+  return `https://wa.me/918714046986?text=${encodeURIComponent(message)}`;
+}
+
 /**
  * A wa.me link to a *customer's* number with a pre-filled message — opens
  * WhatsApp with the text ready to send, but a person still taps send. There
