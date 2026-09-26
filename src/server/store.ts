@@ -503,7 +503,7 @@ export function deleteReview(id: string): Promise<{ id: string }> {
 }
 
 export type ProductPatch = Partial<
-  Pick<StoreProduct, "price" | "stockQty" | "inStock" | "madeOn">
+  Pick<StoreProduct, "name" | "price" | "stockQty" | "inStock" | "madeOn">
 >;
 
 export function updateProduct(
@@ -515,6 +515,11 @@ export function updateProduct(
     const product = store.products.find((p) => p.slug === slug);
     if (!product) throw new Error(`Unknown product: ${slug}`);
 
+    if (patch.name != null) {
+      const name = patch.name.trim();
+      if (!name) throw new Error("Product name can't be empty.");
+      product.name = name;
+    }
     if (patch.price != null) product.price = Math.max(0, Math.round(patch.price));
     if (patch.stockQty != null)
       product.stockQty = Math.max(0, Math.round(patch.stockQty));

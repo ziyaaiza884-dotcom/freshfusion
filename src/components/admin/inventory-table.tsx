@@ -1,15 +1,18 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Camera, Check, Loader2, RotateCcw } from "lucide-react";
 import type { StockedProduct } from "@/lib/analytics";
-import { CATEGORY_LABELS } from "@/data/types";
+import { CATEGORY_LABELS, type Category } from "@/data/types";
 import { compressImage } from "@/lib/client-image";
 import { ProductArt } from "@/components/product-art";
 import { cn } from "@/lib/utils";
 
+const CATEGORIES = Object.keys(CATEGORY_LABELS) as Category[];
+
 type RowState = {
+  name: string;
   price: number;
   stockQty: number;
   madeOn: string;
@@ -17,6 +20,7 @@ type RowState = {
 };
 
 const pick = (p: StockedProduct): RowState => ({
+  name: p.name,
   price: p.price,
   stockQty: p.stockQty,
   madeOn: p.madeOn,
@@ -24,6 +28,7 @@ const pick = (p: StockedProduct): RowState => ({
 });
 
 const dirty = (a: RowState, b: RowState) =>
+  a.name !== b.name ||
   a.price !== b.price ||
   a.stockQty !== b.stockQty ||
   a.madeOn !== b.madeOn ||
@@ -37,30 +42,101 @@ export function InventoryTable({
   /** slug -> updatedAt (ms), for products with an admin-uploaded photo */
   photoIndex: Record<string, number>;
 }) {
+  const [categories, setCategories] = useState<Category[]>([]);
+
+  const counts = useMemo(() => {
+    const c: Partial<Record<Category, number>> = {};
+    for (const p of products) c[p.category] = (c[p.category] ?? 0) + 1;
+    return c;
+  }, [products]);
+
+  const filtered = useMemo(
+    () =>
+      categories.length === 0
+        ? products
+        : products.filter((p) => categories.includes(p.category)),
+    [products, categories],
+  );
+
+  const toggle = (cat: Category) =>
+    setCategories((cur) =>
+      cur.includes(cat) ? cur.filter((c) => c !== cat) : [...cur, cat],
+    );
+
   return (
-    <div className="overflow-x-auto rounded-lg border border-border">
-      <table className="w-full min-w-[820px] text-sm">
-        <thead>
-          <tr className="border-b border-border bg-surface-muted/50 text-left text-xs uppercase tracking-wide text-muted-foreground">
-            <th className="px-4 py-3 font-semibold">Photo</th>
-            <th className="px-4 py-3 font-semibold">Product</th>
-            <th className="px-4 py-3 font-semibold">Price ₹</th>
-            <th className="px-4 py-3 font-semibold">Stock</th>
-            <th className="px-4 py-3 font-semibold">Made on</th>
-            <th className="px-4 py-3 font-semibold">In stock</th>
-            <th className="px-4 py-3" />
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-border">
-          {products.map((p) => (
-            <InventoryRow
-              key={p.slug}
-              product={p}
-              photoUpdatedAt={photoIndex[p.slug]}
-            />
+    <div className="grid gap-6 lg:grid-cols-[200px_1fr]">
+      <div>
+        <p className="mb-2 text-sm text-muted-foreground">
+          {filtered.length} product{filtered.length === 1 ? "" : "s"}
+        </p>
+        <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+          Category
+        </h2>
+        <ul className="mt-2 space-y-1.5">
+          {CATEGORIES.map((cat) => (
+            <li key={cat}>
+              <label className="flex cursor-pointer items-center gap-2 text-sm">
+                <input
+                  type="checkbox"
+                  checked={categories.includes(cat)}
+                  onChange={() => toggle(cat)}
+                  className="h-4 w-4 rounded border-border text-primary focus:ring-primary"
+                />
+                <span
+                  className={cn(
+                    categories.includes(cat) &&
+                      "font-semibold text-foreground",
+                  )}
+                >
+                  {CATEGORY_LABELS[cat]}
+                </span>
+                <span className="ml-auto text-xs text-muted-foreground">
+                  {counts[cat] ?? 0}
+                </span>
+              </label>
+            </li>
           ))}
-        </tbody>
-      </table>
+        </ul>
+        {categories.length > 0 && (
+          <button
+            type="button"
+            onClick={() => setCategories([])}
+            className="mt-3 text-xs font-semibold text-primary hover:underline"
+          >
+            Clear filter
+          </button>
+        )}
+      </div>
+
+      <div className="overflow-x-auto rounded-lg border border-border">
+        <table className="w-full min-w-[820px] text-sm">
+          <thead>
+            <tr className="border-b border-border bg-surface-muted/50 text-left text-xs uppercase tracking-wide text-muted-foreground">
+              <th className="px-4 py-3 font-semibold">Photo</th>
+              <th className="px-4 py-3 font-semibold">Product</th>
+              <th className="px-4 py-3 font-semibold">Price ₹</th>
+              <th className="px-4 py-3 font-semibold">Stock</th>
+              <th className="px-4 py-3 font-semibold">Made on</th>
+              <th className="px-4 py-3 font-semibold">In stock</th>
+              <th className="px-4 py-3" />
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-border">
+            {filtered.map((p) => (
+              <InventoryRow
+                key={p.slug}
+                product={p}
+                photoUpdatedAt={photoIndex[p.slug]}
+              />
+            ))}
+          </tbody>
+        </table>
+        {filtered.length === 0 && (
+          <div className="py-16 text-center text-sm text-muted-foreground">
+            No products in this category.
+          </div>
+        )}
+      </div>
     </div>
   );
 }
@@ -195,6 +271,7 @@ function InventoryRow({
   const [error, setError] = useState<string | null>(null);
 
   const isDirty = dirty(row, original);
+  const nameValid = row.name.trim().length > 0;
   const set = <K extends keyof RowState>(k: K, v: RowState[K]) =>
     setRow((r) => ({ ...r, [k]: v }));
 
@@ -232,11 +309,16 @@ function InventoryRow({
         />
       </td>
       <td className="px-4 py-3">
-        <p className="font-medium">{product.name}</p>
-        <p className="text-xs text-muted-foreground">
+        <input
+          type="text"
+          value={row.name}
+          onChange={(e) => set("name", e.target.value)}
+          className="w-full min-w-[160px] rounded-md border border-transparent bg-transparent px-1.5 py-1 font-medium hover:border-border focus:border-primary focus:bg-surface focus:outline-none"
+        />
+        <p className="mt-0.5 px-1.5 text-xs text-muted-foreground">
           {CATEGORY_LABELS[product.category]}
         </p>
-        {error && <p className="mt-1 text-xs text-accent">{error}</p>}
+        {error && <p className="mt-1 px-1.5 text-xs text-accent">{error}</p>}
       </td>
       <td className="px-4 py-3">
         <input
@@ -291,7 +373,7 @@ function InventoryRow({
         <button
           type="button"
           onClick={save}
-          disabled={!isDirty || saving}
+          disabled={!isDirty || !nameValid || saving}
           className={cn(
             "inline-flex h-9 items-center gap-1.5 rounded-md px-3 text-xs font-semibold transition-colors",
             saved

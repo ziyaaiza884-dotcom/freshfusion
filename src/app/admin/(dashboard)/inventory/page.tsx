@@ -12,8 +12,7 @@ export default async function AdminInventoryPage() {
     <div>
       <h1 className="font-serif text-2xl font-bold">Inventory</h1>
       <p className="mt-1 text-sm text-muted-foreground">
-        {products.length} products. Edits take effect on the storefront
-        immediately.
+        Edits take effect on the storefront immediately.
       </p>
       <div className="mt-6">
         <InventoryTable products={products} photoIndex={photoIndex} />
