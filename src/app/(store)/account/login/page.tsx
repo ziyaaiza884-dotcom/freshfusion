@@ -45,7 +45,7 @@ export default function AccountLoginPage() {
       <p className="mt-1 text-center text-sm text-muted-foreground">
         {mode === "login"
           ? "Track your orders and check out faster next time."
-          : "Takes a minute — then your orders are all in one place."}
+          : "Takes a minute, and you'll get 10% off your first order."}
       </p>
 
       <form onSubmit={submit} className="mt-8 space-y-4">

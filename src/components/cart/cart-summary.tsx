@@ -1,12 +1,29 @@
 "use client";
 
+import Link from "next/link";
+import { useEffect } from "react";
 import { motion } from "framer-motion";
+import { Sparkles } from "lucide-react";
 import { useCart } from "@/context/cart-context";
+import { useAuth } from "@/context/auth-context";
 import { formatPrice } from "@/lib/format";
 import { ButtonLink } from "@/components/ui/button";
 
 export function CartSummary({ showCheckout = true }: { showCheckout?: boolean }) {
-  const { totals } = useCart();
+  const { state, totals, dispatch } = useCart();
+  const { customer, hydrated } = useAuth();
+
+  const welcomeEligible =
+    hydrated && customer?.welcomeOfferEligible && !customer.welcomeOfferUsedAt;
+  const welcomeApplied = welcomeEligible && state.discountCode === "WELCOME10";
+
+  useEffect(() => {
+    if (welcomeEligible && !state.discountCode) {
+      dispatch({ type: "applyDiscount", code: "WELCOME10" });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- only re-check when eligibility or the current code changes
+  }, [welcomeEligible, state.discountCode]);
+
   const pct = totals.freeDeliveryRemaining
     ? Math.min(
         100,
@@ -67,14 +84,27 @@ export function CartSummary({ showCheckout = true }: { showCheckout?: boolean })
         </p>
       )}
 
+      {welcomeApplied && (
+        <p className="mt-4 flex items-center gap-2 rounded-lg border border-primary/30 bg-primary/10 px-3 py-2.5 text-xs font-semibold text-primary">
+          <Sparkles className="h-4 w-4 shrink-0" />
+          Your 10% new-member discount is applied
+        </p>
+      )}
+
       {showCheckout && (
         <ButtonLink href="/checkout" size="lg" className="mt-5 w-full">
           Checkout
         </ButtonLink>
       )}
-      <p className="mt-3 text-center text-xs text-muted-foreground">
-        Demo checkout · no real payment
-      </p>
+
+      {hydrated && !customer && (
+        <p className="mt-3 text-center text-xs text-muted-foreground">
+          <Link href="/account/login" className="font-semibold text-primary hover:underline">
+            Sign in or sign up
+          </Link>{" "}
+          — new accounts get 10% off their first order
+        </p>
+      )}
     </aside>
   );
 }

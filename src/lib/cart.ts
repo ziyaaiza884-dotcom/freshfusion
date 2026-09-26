@@ -35,6 +35,10 @@ export const MAX_QTY_PER_LINE = 10;
 export const COUPONS: Record<string, { label: string; apply: (sub: number) => number }> = {
   FRESH10: { label: "10% off", apply: (sub) => Math.round(sub * 0.1) },
   PICKLE50: { label: "₹50 off orders above ₹500", apply: (sub) => (sub >= 500 ? 50 : 0) },
+  // account-gated — only ever actually applied server-side for a signed-in
+  // customer whose account is still eligible (see server/store.ts
+  // createOrder); listed here so the client can preview the math.
+  WELCOME10: { label: "10% off your first order", apply: (sub) => Math.round(sub * 0.1) },
 };
 
 export type CartAction =

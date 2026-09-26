@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { LogOut, Package } from "lucide-react";
+import { LogOut, Package, Sparkles } from "lucide-react";
 import { useAuth } from "@/context/auth-context";
 import type { StoredOrder } from "@/lib/orders";
 import { ORDER_STATUS_LABELS } from "@/lib/orders";
@@ -78,6 +78,13 @@ export default function AccountPage() {
           <LogOut className="h-4 w-4" /> Sign out
         </button>
       </div>
+
+      {customer.welcomeOfferEligible && !customer.welcomeOfferUsedAt && (
+        <p className="mt-4 flex items-center gap-2 rounded-lg border border-primary/30 bg-primary/10 px-3 py-2.5 text-sm font-medium text-primary">
+          <Sparkles className="h-4 w-4 shrink-0" />
+          You have 10% off your first order — it&rsquo;ll apply automatically at checkout.
+        </p>
+      )}
 
       <h2 className="mt-8 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
         Your orders

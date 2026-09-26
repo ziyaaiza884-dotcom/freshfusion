@@ -318,6 +318,59 @@ describe("orders", () => {
   });
 });
 
+describe("welcome offer", () => {
+  const newCustomer = (over: Partial<Parameters<typeof store.createCustomer>[0]> = {}) =>
+    store.createCustomer({
+      name: "New Customer",
+      email: "new@example.com",
+      phone: "9876543210",
+      passwordHash: "hash",
+      salt: "salt",
+      ...over,
+    });
+
+  it("grants eligibility to a genuinely new email + phone", async () => {
+    const c = await newCustomer();
+    expect(c.welcomeOfferEligible).toBe(true);
+    expect(c.welcomeOfferUsedAt).toBeUndefined();
+  });
+
+  it("refuses a second account claiming with the same phone under a new email", async () => {
+    await newCustomer({ email: "first@example.com", phone: "9876543210" });
+    const second = await newCustomer({
+      email: "second@example.com",
+      phone: "9876543210",
+    });
+    expect(second.welcomeOfferEligible).toBe(false);
+  });
+
+  it("applies WELCOME10 for an eligible signed-in customer and marks it used", async () => {
+    const c = await newCustomer();
+    const order = await store.createOrder(
+      makeOrder({ customerId: c.id, discountCode: "WELCOME10" }),
+    );
+    expect(order.totals.discount).toBe(36); // 10% of 360
+    const updated = await store.getCustomerById(c.id);
+    expect(updated?.welcomeOfferUsedAt).toBeTruthy();
+  });
+
+  it("ignores WELCOME10 for a guest checkout with no customerId", async () => {
+    const order = await store.createOrder(makeOrder({ discountCode: "WELCOME10" }));
+    expect(order.totals.discount).toBe(0);
+  });
+
+  it("ignores WELCOME10 once it's already been used", async () => {
+    const c = await newCustomer();
+    await store.createOrder(
+      makeOrder({ customerId: c.id, discountCode: "WELCOME10" }),
+    );
+    const second = await store.createOrder(
+      makeOrder({ customerId: c.id, discountCode: "WELCOME10" }),
+    );
+    expect(second.totals.discount).toBe(0);
+  });
+});
+
 describe("reviews", () => {
   const draft = {
     productSlug: "beef-pickle",

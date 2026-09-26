@@ -5,6 +5,7 @@ import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { BookmarkPlus, RotateCcw, ShoppingBag, Trash2, X } from "lucide-react";
 import { useCart } from "@/context/cart-context";
+import { useAuth } from "@/context/auth-context";
 import { COUPONS, type CartLine } from "@/lib/cart";
 import { getProduct } from "@/data/catalog";
 import { formatPrice } from "@/lib/format";
@@ -18,6 +19,7 @@ import { ProductGridSkeleton } from "@/components/product-grid";
 
 export function CartView() {
   const { state, totals, dispatch, hydrated } = useCart();
+  const { customer } = useAuth();
   const [code, setCode] = useState("");
   const [codeError, setCodeError] = useState<string | null>(null);
 
@@ -62,6 +64,13 @@ export function CartView() {
     if (!key) return;
     if (!COUPONS[key]) {
       setCodeError("That code isn’t valid. Try FRESH10 or PICKLE50.");
+      return;
+    }
+    if (
+      key === "WELCOME10" &&
+      !(customer?.welcomeOfferEligible && !customer.welcomeOfferUsedAt)
+    ) {
+      setCodeError("WELCOME10 is only for a new account's first order.");
       return;
     }
     setCodeError(null);

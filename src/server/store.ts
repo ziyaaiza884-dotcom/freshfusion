@@ -28,7 +28,7 @@ import { seedReviews } from "@/data/seed-reviews";
 import { DEFAULT_THEME_ID, isThemeId } from "@/lib/themes";
 import { verifySignature } from "@/server/payments/gateway";
 import { isMediaKey, type MediaItem, type MediaKey, type MediaMap } from "@/lib/media";
-import type { StoredCustomer } from "@/lib/customers";
+import { normalizePhone, type StoredCustomer } from "@/lib/customers";
 
 export interface StoreProduct extends Product {
   /** units on hand; the storefront still gates on `inStock` */
@@ -51,6 +51,14 @@ export interface Store {
   productPhotos: Record<string, MediaItem>;
   /** registered customer accounts (email + password login) */
   customers: StoredCustomer[];
+  /**
+   * Emails and phone numbers that have already claimed the WELCOME10
+   * new-member discount (as `email:<lowercased>` / `phone:<last 10
+   * digits>`), recorded at signup regardless of whether an order ever
+   * used it — so signing up again with a different email but the same
+   * phone (or vice versa) never grants a second discount.
+   */
+  claimedWelcomeOffers: string[];
   meta: { seededAt: string; version: number };
 }
 
@@ -84,6 +92,7 @@ function seed(): Store {
     media: {},
     productPhotos: {},
     customers: [],
+    claimedWelcomeOffers: [],
     meta: { seededAt: new Date().toISOString(), version: STORE_VERSION },
   };
 }
@@ -122,6 +131,9 @@ function normalise(store: Store): Store {
   }
   if (!Array.isArray(store.customers)) {
     store.customers = [];
+  }
+  if (!Array.isArray(store.claimedWelcomeOffers)) {
+    store.claimedWelcomeOffers = [];
   }
   return store;
 }
@@ -283,16 +295,28 @@ export function createCustomer(input: {
         "bad_request",
       );
     }
+    const phone = input.phone?.trim() || undefined;
+    const emailKey = `email:${email}`;
+    const phoneKey = phone ? `phone:${normalizePhone(phone)}` : undefined;
+    const alreadyClaimed =
+      store.claimedWelcomeOffers.includes(emailKey) ||
+      (phoneKey ? store.claimedWelcomeOffers.includes(phoneKey) : false);
+
     const customer: StoredCustomer = {
       id: `cus_${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`,
       name: input.name.trim(),
       email,
-      phone: input.phone?.trim() || undefined,
+      phone,
       passwordHash: input.passwordHash,
       salt: input.salt,
       createdAt: new Date().toISOString(),
+      welcomeOfferEligible: !alreadyClaimed,
     };
     store.customers.push(customer);
+    if (!alreadyClaimed) {
+      store.claimedWelcomeOffers.push(emailKey);
+      if (phoneKey) store.claimedWelcomeOffers.push(phoneKey);
+    }
     await persist(store);
     return customer;
   });
@@ -646,11 +670,25 @@ export function createOrder(input: CreateOrderInput): Promise<StoredOrder> {
       };
     });
 
+    // WELCOME10 is account-gated: only honour it for a signed-in customer
+    // whose account is still eligible and hasn't used it before — never
+    // trust the client's code alone for this one.
+    let discountCode = input.discountCode ?? null;
+    let welcomeCustomer: StoredCustomer | undefined;
+    if (discountCode === "WELCOME10") {
+      welcomeCustomer = rest.customerId
+        ? store.customers.find((c) => c.id === rest.customerId)
+        : undefined;
+      const eligible =
+        welcomeCustomer?.welcomeOfferEligible && !welcomeCustomer.welcomeOfferUsedAt;
+      if (!eligible) discountCode = null;
+    }
+
     // authoritative totals — discount re-derived from the code, not the client
     const totals = computeTotals({
       ...emptyCart,
       items: lines,
-      discountCode: input.discountCode ?? null,
+      discountCode,
     });
 
     const payment = resolvePayment(input.payment, now);
@@ -679,6 +717,9 @@ export function createOrder(input: CreateOrderInput): Promise<StoredOrder> {
       }
     }
     store.orders.push(order);
+    if (welcomeCustomer && discountCode === "WELCOME10") {
+      welcomeCustomer.welcomeOfferUsedAt = now;
+    }
     await persist(store);
     return order;
   });
