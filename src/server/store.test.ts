@@ -185,7 +185,7 @@ describe("orders", () => {
     expect(order.items[0].price).toBe(180); // real catalog price
     expect(order.items[0].name).toBe("Lemon Pickle");
     expect(order.totals.subtotal).toBe(360);
-    expect(order.totals.total).toBe(452);
+    expect(order.totals.total).toBe(434);
   });
 
   it("re-derives the discount from the code, not the client amount", async () => {

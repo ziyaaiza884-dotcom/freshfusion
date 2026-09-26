@@ -236,7 +236,9 @@ function OrderRow({ order }: { order: StoredOrder }) {
                     : formatPrice(order.totals.delivery)
                 }
               />
-              <Line label="GST" value={formatPrice(order.totals.tax)} />
+              {order.totals.tax > 0 && (
+                <Line label="GST" value={formatPrice(order.totals.tax)} />
+              )}
             </div>
           </div>
 

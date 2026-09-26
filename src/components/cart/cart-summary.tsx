@@ -36,7 +36,9 @@ export function CartSummary({ showCheckout = true }: { showCheckout?: boolean })
           label="Delivery"
           value={totals.delivery === 0 ? "Free" : formatPrice(totals.delivery)}
         />
-        <Row label="GST (5%)" value={formatPrice(totals.tax)} />
+        {totals.tax > 0 && (
+          <Row label="GST" value={formatPrice(totals.tax)} />
+        )}
         <div className="my-3 border-t border-border" />
         <Row label="Total" value={formatPrice(totals.total)} bold />
       </div>
@@ -71,7 +73,7 @@ export function CartSummary({ showCheckout = true }: { showCheckout?: boolean })
         </ButtonLink>
       )}
       <p className="mt-3 text-center text-xs text-muted-foreground">
-        Taxes shown are indicative · demo checkout, no real payment
+        Demo checkout · no real payment
       </p>
     </aside>
   );

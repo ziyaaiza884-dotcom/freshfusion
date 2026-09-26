@@ -98,9 +98,7 @@ describe("computeTotals", () => {
     expect(t.subtotal).toBe(lemon.price);
     expect(t.delivery).toBe(DELIVERY_FEE);
     expect(t.freeDeliveryRemaining).toBe(FREE_DELIVERY_THRESHOLD - lemon.price);
-    expect(t.total).toBe(
-      lemon.price + PACKAGING_FEE + DELIVERY_FEE + Math.round(lemon.price * 0.05),
-    );
+    expect(t.total).toBe(lemon.price + PACKAGING_FEE + DELIVERY_FEE);
   });
 
   it("waives delivery once the subtotal clears the threshold", () => {
@@ -110,7 +108,7 @@ describe("computeTotals", () => {
     expect(t.freeDeliveryRemaining).toBe(0);
   });
 
-  it("applies the FRESH10 coupon before tax and delivery", () => {
+  it("applies the FRESH10 coupon before delivery", () => {
     const s = run(
       emptyCart,
       { type: "add", product: lemon, qty: 2 }, // 360
@@ -120,10 +118,8 @@ describe("computeTotals", () => {
     expect(t.discount).toBe(36);
     expect(t.discountLabel).toBe("10% off");
     const discountedSub = 360 - 36;
-    expect(t.tax).toBe(Math.round(discountedSub * 0.05));
-    expect(t.total).toBe(
-      discountedSub + PACKAGING_FEE + DELIVERY_FEE + Math.round(discountedSub * 0.05),
-    );
+    expect(t.tax).toBe(0);
+    expect(t.total).toBe(discountedSub + PACKAGING_FEE + DELIVERY_FEE);
   });
 
   it("ignores an unknown coupon code", () => {

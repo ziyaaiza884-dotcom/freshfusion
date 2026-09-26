@@ -23,4 +23,4 @@ export const formatDate = (iso: string) =>
 export const FREE_DELIVERY_THRESHOLD = 799;
 export const DELIVERY_FEE = 49;
 export const PACKAGING_FEE = 25;
-export const GST_RATE = 0.05;
+export const GST_RATE = 0;

@@ -227,7 +227,9 @@ export function OrderView({ id }: { id: string }) {
                 : formatPrice(order.totals.delivery)
             }
           />
-          <Row label="GST" value={formatPrice(order.totals.tax)} />
+          {order.totals.tax > 0 && (
+            <Row label="GST" value={formatPrice(order.totals.tax)} />
+          )}
           <Row label="Total" value={formatPrice(order.totals.total)} bold />
         </div>
         <p className="mt-3 text-xs text-muted-foreground">
