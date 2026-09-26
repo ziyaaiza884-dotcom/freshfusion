@@ -195,7 +195,7 @@ h1, h2, h3, h4 {
 /* ------------------------------------------------------------------ */
 /*  Festive hero dressing — ambient particles + corner illustration,  */
 /*  themed per festival (Eid, Diwali, Onam, Christmas, Ramadan,        */
-/*  Nowruz). See src/lib/festive.ts + src/components/home/            */
+/*  Nowruz). See src/lib/festivals.ts + src/components/home/          */
 /*  festive-scene.tsx. Colors always come from the active theme's     */
 /*  tokens, never hardcoded, so a new theme just works.                */
 /* ------------------------------------------------------------------ */
@@ -294,6 +294,38 @@ h1, h2, h3, h4 {
 @media (prefers-reduced-motion: reduce) {
   .ff-particle,
   .ff-festive-badge {
+    animation: none !important;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/*  Festival takeover decorations — lanterns, diyas (see               */
+/*  festival-decorations.tsx). Gentle, subtle motion only.             */
+/* ------------------------------------------------------------------ */
+
+@keyframes ff-lantern-sway {
+  0%, 100% { transform: rotate(-3deg); }
+  50% { transform: rotate(3deg); }
+}
+
+.ff-lantern-sway {
+  transform-origin: top center;
+  animation: ff-lantern-sway 4.5s ease-in-out infinite;
+}
+
+@keyframes ff-flame-flicker {
+  0%, 100% { opacity: 0.85; transform: scaleY(1); }
+  50% { opacity: 1; transform: scaleY(1.12); }
+}
+
+.ff-flame {
+  transform-origin: bottom center;
+  animation: ff-flame-flicker 1.4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ff-lantern-sway,
+  .ff-flame {
     animation: none !important;
   }
 }

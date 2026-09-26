@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import {
   getAllProducts,
   getBestSellers,
@@ -5,6 +6,7 @@ import {
 } from "@/server/products";
 import { getMedia, getSettings } from "@/server/store";
 import { MEDIA_SLOTS, mediaSrc } from "@/lib/media";
+import { resolveActiveFestivalId } from "@/lib/festivals";
 import { Hero } from "@/components/home/hero";
 import { Testimonials } from "@/components/home/testimonials";
 import { TrustBadges } from "@/components/trust-badges";
@@ -32,9 +34,18 @@ export default async function HomePage() {
     media[slot.key] ? mediaSrc(slot.key, media) : undefined,
   );
 
+  const activeFestivalId = resolveActiveFestivalId(settings.theme);
+
   return (
     <>
-      <Hero heroSrc={heroSrc} tileSrcs={tileSrcs} themeId={settings.theme} />
+      <Suspense fallback={null}>
+        <Hero
+          heroSrc={heroSrc}
+          tileSrcs={tileSrcs}
+          themeId={activeFestivalId}
+          allProducts={all}
+        />
+      </Suspense>
 
       <Section className="py-6">
         <Reveal>
