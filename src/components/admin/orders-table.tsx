@@ -27,6 +27,17 @@ const selectTone: Record<OrderStatus, string> = {
   cancelled: "border-[#eecccc] bg-[#f6e4e4] text-accent",
 };
 
+/** statuses that auto-open a WhatsApp update to the customer as soon as
+ *  the admin selects them from the dropdown — "delivered" stays a manual
+ *  click (the "Send thank-you" button below) since that message is only
+ *  worth sending once the admin has actually confirmed delivery. */
+const STATUS_WHATSAPP_MESSAGE: Partial<Record<OrderStatus, (o: StoredOrder) => string>> = {
+  placed: (o) =>
+    `Hi ${o.customer.name.split(" ")[0]}! Your Fresh Fusion order ${o.id} has been placed and we're getting it ready. We'll keep you posted 🌿`,
+  out_for_delivery: (o) =>
+    `Hi ${o.customer.name.split(" ")[0]}! Your Fresh Fusion order ${o.id} is out for delivery and should reach you soon 🚚`,
+};
+
 function paymentLabel(p: PaymentInfo): { text: string; tone: string } {
   if (p.status === "paid")
     return { text: "Paid", tone: "bg-primary/10 text-primary" };
@@ -92,6 +103,18 @@ function OrderRow({ order }: { order: StoredOrder }) {
     setStatus(next);
     setSaving(true);
     setError(null);
+
+    // open synchronously (before the await) so the browser doesn't treat it
+    // as a blocked popup — it's still directly inside the user's click/change
+    const buildMessage = STATUS_WHATSAPP_MESSAGE[next];
+    if (buildMessage) {
+      window.open(
+        customerWhatsAppUrl(order.customer.phone, buildMessage(order)),
+        "_blank",
+        "noopener,noreferrer",
+      );
+    }
+
     try {
       const res = await fetch(`/api/admin/orders/${order.id}`, {
         method: "PATCH",
