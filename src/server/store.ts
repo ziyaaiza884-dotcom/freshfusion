@@ -1,7 +1,7 @@
 import "server-only";
 import { getDb } from "@/server/mongo";
-import { products as seedProducts } from "@/data/catalog";
-import type { Product } from "@/data/types";
+import { products as seedProducts, slugify } from "@/data/catalog";
+import type { Category, Dietary, Product } from "@/data/types";
 import {
   etaWindow,
   generateOrderId,
@@ -557,6 +557,86 @@ export function updateProduct(
 
     await persist(store);
     return product;
+  });
+}
+
+/** small rotating palette so a freshly-added product still gets a
+ *  reasonable placeholder gradient before an admin uploads a real photo */
+const NEW_PRODUCT_ART = [
+  "from-[#5b2b1e] to-[#8c3d21]",
+  "from-[#3f6b4c] to-[#7aa85f]",
+  "from-[#c9a227] to-[#e6c84f]",
+  "from-[#7a4a25] to-[#a9702f]",
+  "from-[#8a1f16] to-[#c23a2a]",
+];
+
+export interface NewProductInput {
+  name: string;
+  category: Category;
+  dietary: Dietary;
+  price: number;
+  weight: number;
+  unit: "g" | "ml";
+  blurb?: string;
+  stockQty: number;
+}
+
+export function createProduct(input: NewProductInput): Promise<StoreProduct> {
+  return enqueue(async () => {
+    const store = await load();
+    const name = input.name.trim();
+    if (!name) throw new Error("Product name is required.");
+
+    const base = slugify(name);
+    if (!base) throw new Error("Couldn't make a URL slug from that name.");
+    let slug = base;
+    let n = 2;
+    while (store.products.some((p) => p.slug === slug)) slug = `${base}-${n++}`;
+
+    const price = Math.max(0, Math.round(input.price));
+    const weight = Math.max(1, Math.round(input.weight));
+    const stockQty = Math.max(0, Math.round(input.stockQty));
+    const blurb = input.blurb?.trim() || `${name}, home-cooked in small batches.`;
+
+    const product: StoreProduct = {
+      id: slug,
+      slug,
+      name,
+      category: input.category,
+      dietary: input.dietary,
+      price,
+      weight,
+      unit: input.unit,
+      blurb,
+      description: blurb,
+      ingredients: [],
+      allergens: [],
+      inStock: stockQty > 0,
+      isHot: false,
+      isNew: true,
+      isBestSeller: false,
+      rating: 0,
+      reviewCount: 0,
+      madeOn: new Date().toISOString().slice(0, 10),
+      art: NEW_PRODUCT_ART[store.products.length % NEW_PRODUCT_ART.length],
+      related: [],
+      stockQty,
+    };
+    store.products.push(product);
+    await persist(store);
+    return product;
+  });
+}
+
+export function deleteProduct(slug: string): Promise<{ slug: string }> {
+  return enqueue(async () => {
+    const store = await load();
+    const before = store.products.length;
+    store.products = store.products.filter((p) => p.slug !== slug);
+    if (store.products.length === before)
+      throw new Error(`Unknown product: ${slug}`);
+    await persist(store);
+    return { slug };
   });
 }
 

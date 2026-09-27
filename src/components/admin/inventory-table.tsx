@@ -2,7 +2,7 @@
 
 import { useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Camera, Check, Loader2, RotateCcw } from "lucide-react";
+import { Camera, Check, Loader2, RotateCcw, Trash2 } from "lucide-react";
 import type { StockedProduct } from "@/lib/analytics";
 import { CATEGORY_LABELS, type Category } from "@/data/types";
 import { compressImage } from "@/lib/client-image";
@@ -270,10 +270,35 @@ function InventoryRow({
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const [deleting, setDeleting] = useState(false);
   const isDirty = dirty(row, original);
   const nameValid = row.name.trim().length > 0;
   const set = <K extends keyof RowState>(k: K, v: RowState[K]) =>
     setRow((r) => ({ ...r, [k]: v }));
+
+  const remove = async () => {
+    if (
+      !window.confirm(
+        `Delete "${product.name}" permanently? This can't be undone.`,
+      )
+    )
+      return;
+    setDeleting(true);
+    setError(null);
+    try {
+      const res = await fetch(`/api/admin/products/${product.slug}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) {
+        const j = (await res.json().catch(() => ({}))) as { error?: string };
+        throw new Error(j.error ?? `Delete failed (${res.status})`);
+      }
+      router.refresh();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Delete failed");
+      setDeleting(false);
+    }
+  };
 
   const save = async () => {
     setSaving(true);
@@ -370,29 +395,44 @@ function InventoryRow({
         </button>
       </td>
       <td className="px-4 py-3 text-right">
-        <button
-          type="button"
-          onClick={save}
-          disabled={!isDirty || !nameValid || saving}
-          className={cn(
-            "inline-flex h-9 items-center gap-1.5 rounded-md px-3 text-xs font-semibold transition-colors",
-            saved
-              ? "bg-primary text-primary-foreground"
-              : isDirty
-                ? "bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground"
-                : "bg-surface-muted text-muted-foreground",
-          )}
-        >
-          {saving ? (
-            <Loader2 className="h-3.5 w-3.5 animate-spin" />
-          ) : saved ? (
-            <>
-              <Check className="h-3.5 w-3.5" /> Saved
-            </>
-          ) : (
-            "Save"
-          )}
-        </button>
+        <div className="flex items-center justify-end gap-1.5">
+          <button
+            type="button"
+            onClick={save}
+            disabled={!isDirty || !nameValid || saving}
+            className={cn(
+              "inline-flex h-9 items-center gap-1.5 rounded-md px-3 text-xs font-semibold transition-colors",
+              saved
+                ? "bg-primary text-primary-foreground"
+                : isDirty
+                  ? "bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground"
+                  : "bg-surface-muted text-muted-foreground",
+            )}
+          >
+            {saving ? (
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+            ) : saved ? (
+              <>
+                <Check className="h-3.5 w-3.5" /> Saved
+              </>
+            ) : (
+              "Save"
+            )}
+          </button>
+          <button
+            type="button"
+            onClick={remove}
+            disabled={deleting}
+            aria-label={`Delete ${product.name}`}
+            className="grid h-9 w-9 shrink-0 place-items-center rounded-md text-muted-foreground transition-colors hover:bg-[#f6e4e4] hover:text-accent disabled:opacity-50"
+          >
+            {deleting ? (
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+            ) : (
+              <Trash2 className="h-3.5 w-3.5" />
+            )}
+          </button>
+        </div>
       </td>
     </tr>
   );

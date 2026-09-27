@@ -124,6 +124,54 @@ describe("updateProduct", () => {
   });
 });
 
+describe("createProduct / deleteProduct", () => {
+  const draft = {
+    name: "Mango Chutney",
+    category: "specialty" as const,
+    dietary: "veg" as const,
+    price: 250,
+    weight: 200,
+    unit: "g" as const,
+    stockQty: 15,
+  };
+
+  it("adds a new product with a generated slug, and it shows up in the catalog", async () => {
+    const p = await store.createProduct(draft);
+    expect(p.slug).toBe("mango-chutney");
+    expect(p.inStock).toBe(true);
+    expect(p.stockQty).toBe(15);
+
+    const all = await store.getStoreProducts();
+    expect(all.some((x) => x.slug === "mango-chutney")).toBe(true);
+  });
+
+  it("de-dupes the slug when the name collides with an existing product", async () => {
+    await store.createProduct(draft);
+    const second = await store.createProduct(draft);
+    expect(second.slug).toBe("mango-chutney-2");
+  });
+
+  it("marks a zero-stock new product as out of stock", async () => {
+    const p = await store.createProduct({ ...draft, stockQty: 0 });
+    expect(p.inStock).toBe(false);
+  });
+
+  it("rejects a blank name", async () => {
+    await expect(store.createProduct({ ...draft, name: "  " })).rejects.toThrow();
+  });
+
+  it("deletes a product so it no longer shows up in the catalog", async () => {
+    const p = await store.createProduct(draft);
+    await store.deleteProduct(p.slug);
+    const all = await store.getStoreProducts();
+    expect(all.some((x) => x.slug === p.slug)).toBe(false);
+  });
+
+  it("rejects deleting an unknown slug", async () => {
+    await expect(store.deleteProduct("nope")).rejects.toThrow();
+  });
+});
+
 describe("orders", () => {
   it("creates an order with placed status, history and a generated id", async () => {
     const order = await store.createOrder(makeOrder());

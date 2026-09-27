@@ -22,7 +22,7 @@ type Seed = {
   related?: string[];
 };
 
-const slugify = (name: string) =>
+export const slugify = (name: string) =>
   name
     .toLowerCase()
     .replace(/\([^)]*\)/g, "")

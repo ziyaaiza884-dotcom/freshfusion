@@ -1,5 +1,6 @@
 import { getProductPhotoIndex, getStoreProducts } from "@/server/store";
 import { InventoryTable } from "@/components/admin/inventory-table";
+import { AddProductForm } from "@/components/admin/add-product-form";
 
 export const dynamic = "force-dynamic";
 
@@ -14,6 +15,9 @@ export default async function AdminInventoryPage() {
       <p className="mt-1 text-sm text-muted-foreground">
         Edits take effect on the storefront immediately.
       </p>
+      <div className="mt-4">
+        <AddProductForm />
+      </div>
       <div className="mt-6">
         <InventoryTable products={products} photoIndex={photoIndex} />
       </div>

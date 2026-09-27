@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { denyIfNotAdmin } from "@/server/admin-guard";
-import { updateProduct, type ProductPatch } from "@/server/store";
+import { deleteProduct, updateProduct, type ProductPatch } from "@/server/store";
 
 export const runtime = "nodejs";
 
@@ -30,6 +30,28 @@ export async function PATCH(
   } catch (err) {
     return NextResponse.json(
       { error: err instanceof Error ? err.message : "Update failed" },
+      { status: 400 },
+    );
+  }
+}
+
+export async function DELETE(
+  _req: Request,
+  { params }: { params: Promise<{ slug: string }> },
+) {
+  const denied = await denyIfNotAdmin();
+  if (denied) return denied;
+
+  const { slug } = await params;
+
+  try {
+    await deleteProduct(slug);
+    revalidatePath("/");
+    revalidatePath("/shop");
+    return NextResponse.json({ ok: true });
+  } catch (err) {
+    return NextResponse.json(
+      { error: err instanceof Error ? err.message : "Delete failed" },
       { status: 400 },
     );
   }
