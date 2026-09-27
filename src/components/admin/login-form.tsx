@@ -2,7 +2,7 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
-import { Loader2, Lock, Sprout } from "lucide-react";
+import { Loader2, Lock, Sprout, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -11,6 +11,7 @@ export function AdminLoginForm() {
   const params = useSearchParams();
   const next = params.get("next") || "/admin";
 
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -23,7 +24,7 @@ export function AdminLoginForm() {
       const res = await fetch("/api/admin/login", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ password }),
+        body: JSON.stringify({ username, password }),
       });
       if (!res.ok) {
         const j = (await res.json().catch(() => ({}))) as { error?: string };
@@ -50,10 +51,26 @@ export function AdminLoginForm() {
       </div>
       <h1 className="mt-5 font-serif text-xl font-bold">Admin sign in</h1>
       <p className="mt-1 text-sm text-muted-foreground">
-        Enter the shared admin password.
+        Sign in with your admin account.
       </p>
 
-      <label className="mt-5 block text-sm font-medium" htmlFor="password">
+      <label className="mt-5 block text-sm font-medium" htmlFor="username">
+        User ID
+      </label>
+      <div className="relative mt-1.5">
+        <User className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+        <Input
+          id="username"
+          autoFocus
+          autoComplete="username"
+          placeholder="admin"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          className="pl-9"
+        />
+      </div>
+
+      <label className="mt-4 block text-sm font-medium" htmlFor="password">
         Password
       </label>
       <div className="relative mt-1.5">
@@ -61,7 +78,6 @@ export function AdminLoginForm() {
         <Input
           id="password"
           type="password"
-          autoFocus
           autoComplete="current-password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
@@ -76,7 +92,7 @@ export function AdminLoginForm() {
       </Button>
 
       <p className="mt-4 text-center text-xs text-muted-foreground">
-        Demo password: <code className="text-foreground">freshfusion</code>
+        Leave User ID blank to sign in as the main admin.
       </p>
     </form>
   );
