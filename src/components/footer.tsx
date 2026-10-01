@@ -77,7 +77,7 @@ export function Footer() {
       </div>
       <div className="border-t border-border/70 py-5 text-center text-xs text-muted-foreground">
         © {new Date().getFullYear()} Fresh Fusion · 100% home-cooked ·
-        FSSAI-approved kitchen · Demo storefront
+        FSSAI-approved kitchen · Crafted in small batches
       </div>
     </footer>
   );
