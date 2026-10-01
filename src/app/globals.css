@@ -27,6 +27,18 @@
   /* signature lamplight glow, derived per-theme from --primary */
   --glow: color-mix(in srgb, var(--primary) 55%, transparent);
   --glow-soft: color-mix(in srgb, var(--primary) 22%, transparent);
+
+  /* self-hosted (Fontsource) font stacks — not theme-dependent, every
+     theme's --font-serif/--font-sans (see lib/themes.ts) just points at
+     one of these. Self-hosted rather than next/font/google so the build
+     never needs to reach Google's servers (it failed intermittently on
+     Render's build infra). */
+  --font-inter: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-playfair: "Playfair Display", Georgia, serif;
+  --font-fraunces: "Fraunces", Georgia, serif;
+  --font-dm-serif: "DM Serif Display", Georgia, serif;
+  --font-dm-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-spectral: "Spectral", Georgia, serif;
 }
 
 @theme inline {
