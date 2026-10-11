@@ -1,0 +1,133 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-12T00:00:00.000Z",
+  "title": "Design System: Fresh Fusion",
+  "extensions": {
+    "colorMeta": {
+      "primary": {
+        "role": "primary",
+        "displayName": "Turmeric Gold",
+        "canonical": "#c99a2e",
+        "tonalRamp": ["#1f1708", "#352611", "#4c3618", "#664722", "#866236", "#c99a2e", "#dcae45", "#f0cf85"]
+      },
+      "primary-strong": {
+        "role": "primary",
+        "displayName": "Turmeric Gold (Strong)",
+        "canonical": "#dcae45",
+        "tonalRamp": ["#2a2010", "#40301a", "#574225", "#715731", "#966f3a", "#dcae45", "#e8c472", "#f4dca3"]
+      },
+      "accent": {
+        "role": "secondary",
+        "displayName": "Mural Maroon-Red",
+        "canonical": "#a83a2a",
+        "tonalRamp": ["#1f0a06", "#33120d", "#4c1b13", "#6b271b", "#8d3323", "#a83a2a", "#c55844", "#e08c7a"]
+      },
+      "spice": {
+        "role": "tertiary",
+        "displayName": "Paddy-Field Green",
+        "canonical": "#4c7a45",
+        "tonalRamp": ["#0f1a0d", "#1a2d17", "#264222", "#335a2d", "#3e6c37", "#4c7a45", "#6b9a63", "#9cc194"]
+      },
+      "background": { "role": "neutral", "displayName": "Teak Wood", "canonical": "#2a2015" },
+      "surface": { "role": "neutral", "displayName": "Rosewood Surface", "canonical": "#362a1a" },
+      "surface-muted": { "role": "neutral", "displayName": "Muted Rosewood", "canonical": "#423323" },
+      "foreground": { "role": "neutral", "displayName": "Kasavu Cream", "canonical": "#f6ecd8" },
+      "muted-foreground": { "role": "neutral", "displayName": "Warm Taupe", "canonical": "#c7b08b" },
+      "border": { "role": "neutral", "displayName": "Warm Bronze", "canonical": "#4f3f28" }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display / Headings", "purpose": "Fraunces serif for h1-h4, product names on hero/cards. Swaps per active festival theme." },
+      "body": { "displayName": "Body / UI", "purpose": "Inter sans for paragraphs, labels, buttons, inputs. Never swapped for the serif." }
+    },
+    "shadows": [
+      { "name": "glow-soft", "value": "0 20px 45px -20px var(--glow-soft)", "purpose": "Resting-state glow on hero product tiles; barely-there presence cue." },
+      { "name": "glow", "value": "0 24px 55px -16px var(--glow)", "purpose": "Hover-state glow; the primary interactive depth cue across cards, buttons, and stat tiles." }
+    ],
+    "motion": [
+      { "name": "hover-lift", "value": "transform: translateY(-2px); transition: all 0.2s ease-out", "purpose": "Standard hover lift paired with the glow shadow on interactive cards and buttons." },
+      { "name": "press-scale", "value": "transform: scale(0.97)", "purpose": "Active/press feedback on buttons." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "lg", "value": "1024px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The one gold-filled action per view; used for the single most important action.",
+      "html": "<button class=\"ds-btn-primary\">Shop the kitchen</button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 44px; padding: 0 20px; border-radius: 8px; font-weight: 500; font-size: 14px; background: #c99a2e; color: #251a0c; border: none; transition: all 0.2s ease-out; } .ds-btn-primary:hover { background: #dcae45; transform: translateY(-2px); box-shadow: 0 10px 28px -6px rgba(201,154,46,0.55); } .ds-btn-primary:active { transform: scale(0.97); } .ds-btn-primary:focus-visible { outline: 2px solid #c99a2e; outline-offset: 2px; }"
+    },
+    {
+      "name": "Outline Button",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "Secondary action — transparent with a gold border and text.",
+      "html": "<button class=\"ds-btn-outline\">View experience</button>",
+      "css": ".ds-btn-outline { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 44px; padding: 0 20px; border-radius: 8px; font-weight: 500; font-size: 14px; background: transparent; color: #c99a2e; border: 1px solid rgba(201,154,46,0.4); transition: all 0.2s ease-out; } .ds-btn-outline:hover { background: rgba(201,154,46,0.1); border-color: rgba(201,154,46,0.7); }"
+    },
+    {
+      "name": "Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Flat-at-rest content panel; the universal container for product tiles, order rows, admin stat cards.",
+      "html": "<div class=\"ds-card\"><p class=\"ds-card-title\">Beef Pickle</p><p class=\"ds-card-body\">Slow-cooked beef in a dark, peppery masala.</p></div>",
+      "css": ".ds-card { background: #362a1a; border: 1px solid #4f3f28; border-radius: 12px; padding: 20px; transition: all 0.2s ease-out; } .ds-card:hover { transform: translateY(-2px); box-shadow: 0 24px 55px -16px rgba(201,154,46,0.55); border-color: rgba(201,154,46,0.4); } .ds-card-title { font-family: 'Fraunces', Georgia, serif; font-weight: 700; color: #f6ecd8; margin: 0 0 6px; } .ds-card-body { font-family: 'Inter', sans-serif; font-size: 14px; color: #c7b08b; margin: 0; }"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Standard form field — quiet focus cue (border color shift only, no glow).",
+      "html": "<input class=\"ds-input\" placeholder=\"you@example.com\" />",
+      "css": ".ds-input { height: 44px; width: 100%; border-radius: 8px; border: 1px solid #4f3f28; background: #362a1a; color: #f6ecd8; padding: 0 14px; font-family: 'Inter', sans-serif; font-size: 14px; transition: border-color 0.2s ease-out; } .ds-input::placeholder { color: rgba(199,176,139,0.7); } .ds-input:focus-visible { border-color: #c99a2e; outline: none; }"
+    },
+    {
+      "name": "Badge — New",
+      "kind": "chip",
+      "refersTo": "badge-new",
+      "description": "Gold pill marking a new product.",
+      "html": "<span class=\"ds-badge-new\">New</span>",
+      "css": ".ds-badge-new { display: inline-flex; align-items: center; gap: 4px; border-radius: 9999px; padding: 2px 10px; font-size: 11px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; background: #c99a2e; color: #251a0c; }"
+    },
+    {
+      "name": "Badge — Best Seller",
+      "kind": "chip",
+      "refersTo": "badge-best",
+      "description": "Green pill — the one place paddy-field green appears as a signal.",
+      "html": "<span class=\"ds-badge-best\">Best seller</span>",
+      "css": ".ds-badge-best { display: inline-flex; align-items: center; gap: 4px; border-radius: 9999px; padding: 2px 10px; font-size: 11px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; background: #4c7a45; color: #3a2410; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Temple-Mural Evening",
+    "overview": "Fresh Fusion's storefront reads as a Kerala temple mural at dusk: a deep teak-wood dark background (never pure black), warm kasavu-gold borders and accents, and a signature amber \"lamplight\" glow that blooms behind product jars and interactive elements instead of a conventional drop shadow. The palette is a temple-mural triad — turmeric gold, mural maroon-red, and paddy-field green — applied with restraint so gold stays the dominant voice and the other two read as accents, not competing protagonists. This is a home-cooked, family-kitchen brand, not a slick FMCG one. The design avoids sterile, corporate polish in favor of warmth: serif display type for headings, a plain humanist sans for body text and UI chrome, and a flat-by-default surface language where depth is conveyed through a glowing light source rather than stacked shadows. The system is also themeable by design: the same token names are redefined wholesale for festival storefront takeovers, each with its own font pairing.",
+    "keyCharacteristics": [
+      "Deep warm-dark background (teak wood, never pure black or navy)",
+      "Kasavu-gold as the single dominant accent; maroon-red and palm-green used sparingly",
+      "Flat cards with a thin border at rest; warm gold glow appears only on hover/interaction",
+      "Serif display (Fraunces) paired with a plain sans body (Inter) — self-hosted",
+      "Fully themeable token system that re-skins for festivals without changing component code"
+    ],
+    "rules": [
+      { "name": "The One Gold Rule", "body": "Primary gold is the only color allowed to dominate a screen. Maroon and green exist to mark a single specific state (error, success, best-seller) — never as a second or third \"brand\" color competing with gold for attention.", "section": "colors" },
+      { "name": "The Serif-Only-For-Headings Rule", "body": "Fraunces (or the active theme's display face) never appears in body copy, buttons, or form inputs — those always use the sans body font.", "section": "typography" },
+      { "name": "The Flat-By-Default Rule", "body": "Nothing gets a resting-state drop shadow. Shadows exist only as the glow response to hover/interaction state.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do derive every color from the active theme's CSS custom properties — never hardcode a hex value in a component.",
+      "Do use the lamplight glow as the only depth cue on hover; keep rest-state surfaces flat.",
+      "Do keep gold as the single dominant accent; reach for maroon or green only for their one specific meaning.",
+      "Do pair serif headings with sans body/UI text — never swap them."
+    ],
+    "donts": [
+      "Don't add resting-state drop shadows to cards or panels.",
+      "Don't introduce a second gold-weight accent color.",
+      "Don't use the serif display font for body copy, buttons, or form inputs.",
+      "Don't fetch fonts from Google at build time — fonts are self-hosted via Fontsource."
+    ]
+  }
+}
