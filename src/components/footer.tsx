@@ -50,28 +50,30 @@ export function Footer() {
           title="Shop"
           links={[
             ["All products", "/shop"],
-            ["Pickles", "/shop?category=pickles"],
-            ["Spices", "/shop?category=spices"],
-            ["Pulses", "/shop?category=pulses"],
-            ["Rice", "/shop?category=rice"],
-            ["Specialty", "/shop?category=specialty"],
+            ["Pickles", "/category/pickles"],
+            ["Spices", "/category/spices"],
+            ["Pulses", "/category/pulses"],
+            ["Rice", "/category/rice"],
+            ["Specialty", "/category/specialty"],
           ]}
         />
         <FooterCol
           title="Help"
           links={[
-            ["Track an order", "/cart"],
-            ["Delivery & returns", "/shop"],
-            ["FSSAI & sourcing", "/shop"],
-            ["Contact", CONTACT_WHATSAPP_URL],
+            ["Track an order", "/account"],
+            ["FAQ: delivery & shelf life", "/faq"],
+            ["Our kitchen & FSSAI", "/about"],
+            ["Contact us", "/contact"],
           ]}
         />
         <FooterCol
-          title="Company"
+          title="Festival specials"
           links={[
-            ["Our kitchen", "/"],
-            ["Subscribe & save", "/"],
-            ["Refer a friend", "/"],
+            ["Onam sadya pickles", "/onam"],
+            ["Eid gift hampers", "/eid"],
+            ["Ramadan essentials", "/ramadan"],
+            ["Diwali hampers", "/diwali"],
+            ["Christmas specials", "/christmas"],
           ]}
         />
       </div>

@@ -47,7 +47,7 @@ export async function POST(
 
   revalidatePath("/");
   revalidatePath("/shop");
-  revalidatePath(`/product/${slug}`);
+  revalidatePath(`/products/${slug}`);
   revalidatePath("/admin/inventory");
   return NextResponse.json({ ok: true });
 }
@@ -64,7 +64,7 @@ export async function DELETE(
 
   revalidatePath("/");
   revalidatePath("/shop");
-  revalidatePath(`/product/${slug}`);
+  revalidatePath(`/products/${slug}`);
   revalidatePath("/admin/inventory");
   return NextResponse.json({ ok: true });
 }

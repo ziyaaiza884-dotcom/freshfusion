@@ -11,6 +11,7 @@ import { ProductPhoto } from "@/components/product-photo";
 import { Badge } from "@/components/ui/badge";
 import { Stars } from "@/components/stars";
 import { cn } from "@/lib/utils";
+import { productImageAlt } from "@/lib/seo.config";
 
 export function ProductCard({
   product,
@@ -36,7 +37,7 @@ export function ProductCard({
       className="group flex h-full flex-col overflow-hidden rounded-lg border border-border bg-surface shadow-sm transition-[box-shadow,border-color] duration-300 hover:border-primary/40 hover:shadow-[0_18px_40px_-16px_var(--glow)]"
     >
       <Link
-        href={`/product/${product.slug}`}
+        href={`/products/${product.slug}`}
         className="relative block aspect-[4/3] overflow-hidden"
       >
         <ProductPhoto
@@ -44,6 +45,7 @@ export function ProductCard({
           art={product.art}
           category={product.category}
           label={product.name}
+          alt={productImageAlt(product)}
           className={cn(
             "h-full w-full transition-transform duration-700 ease-out group-hover:scale-[1.07]",
             priority && "",
@@ -65,7 +67,7 @@ export function ProductCard({
         <div className="flex items-start justify-between gap-2">
           <h3 className="font-serif text-base font-semibold leading-tight">
             <Link
-              href={`/product/${product.slug}`}
+              href={`/products/${product.slug}`}
               className="transition-colors hover:text-primary-strong"
             >
               {product.name}

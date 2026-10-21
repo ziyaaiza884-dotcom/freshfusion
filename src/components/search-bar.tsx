@@ -46,7 +46,7 @@ export function SearchBar({
   const pick = (slug: string, name: string) => {
     setOpen(false);
     if (navigateOnPick) {
-      router.push(`/product/${slug}`);
+      router.push(`/products/${slug}`);
     } else {
       onChange(name);
       onSubmit?.(name);

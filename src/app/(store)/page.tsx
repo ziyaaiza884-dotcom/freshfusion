@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import type { Metadata } from "next";
 import {
   getAllProducts,
   getBestSellers,
@@ -13,8 +14,14 @@ import { TrustBadges } from "@/components/trust-badges";
 import { ProductCarousel } from "@/components/carousel";
 import { Section, SectionHeading } from "@/components/section";
 import { Reveal } from "@/components/ui/motion";
+import { pageMetadata } from "@/lib/seo";
+import { HOME_SEO } from "@/lib/seo.config";
 
 export const dynamic = "force-dynamic";
+
+export function generateMetadata(): Metadata {
+  return pageMetadata(HOME_SEO, "/");
+}
 
 export default async function HomePage() {
   const [all, best, fresh, media, settings] = await Promise.all([

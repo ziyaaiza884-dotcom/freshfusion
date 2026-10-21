@@ -16,11 +16,14 @@ export function ProductGallery({
   art,
   category,
   name,
+  alt,
 }: {
   slug: string;
   art: string;
   category: Category;
   name: string;
+  /** descriptive photo alt text (see productImageAlt) */
+  alt: string;
 }) {
   const crops = ["object-center", "object-top", "object-bottom"];
   const [active, setActive] = useState(0);
@@ -48,6 +51,7 @@ export function ProductGallery({
             category={category}
             className={cn("h-full w-full", crops[active])}
             label={name}
+            alt={alt}
           />
         </motion.div>
       </motion.div>
@@ -65,7 +69,13 @@ export function ProductGallery({
               i === active ? "border-primary" : "border-border",
             )}
           >
-            <ProductPhoto slug={slug} art={art} category={category} className="h-full w-full" />
+            <ProductPhoto
+              slug={slug}
+              art={art}
+              category={category}
+              className="h-full w-full"
+              alt={`${alt}, view ${i + 1}`}
+            />
           </button>
         ))}
       </div>

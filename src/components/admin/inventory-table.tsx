@@ -167,7 +167,7 @@ function PhotoCell({
       const blob = await compressImage(file, 1000, 0.85);
       setPreview(URL.createObjectURL(blob));
       const form = new FormData();
-      form.append("file", blob, "upload.jpg");
+      form.append("file", blob, "upload");
       const res = await fetch(`/api/admin/media/product/${slug}`, {
         method: "POST",
         body: form,

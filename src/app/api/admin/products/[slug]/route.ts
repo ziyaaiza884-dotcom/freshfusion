@@ -25,7 +25,7 @@ export async function PATCH(
     const product = await updateProduct(slug, body);
     revalidatePath("/");
     revalidatePath("/shop");
-    revalidatePath(`/product/${slug}`);
+    revalidatePath(`/products/${slug}`);
     return NextResponse.json({ product });
   } catch (err) {
     return NextResponse.json(

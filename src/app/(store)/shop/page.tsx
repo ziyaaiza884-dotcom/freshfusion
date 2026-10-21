@@ -3,14 +3,14 @@ import type { Metadata } from "next";
 import { getAllProducts } from "@/server/products";
 import { ShopBrowser } from "@/components/shop/shop-browser";
 import { ProductGridSkeleton } from "@/components/product-grid";
+import { pageMetadata } from "@/lib/seo";
+import { PAGE_SEO } from "@/lib/seo.config";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = {
-  title: "Shop",
-  description:
-    "Browse every Fresh Fusion pickle, spice and specialty jar. Filter by category, diet and price, or search by ingredient.",
-};
+export function generateMetadata(): Metadata {
+  return pageMetadata(PAGE_SEO.shop, "/shop");
+}
 
 export default async function ShopPage() {
   const products = await getAllProducts();

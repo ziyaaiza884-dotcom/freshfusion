@@ -40,7 +40,7 @@ function MediaSlotCard({ slot }: { slot: MediaSlotView }) {
       setPreview(URL.createObjectURL(blob));
 
       const form = new FormData();
-      form.append("file", blob, "upload.jpg");
+      form.append("file", blob, "upload");
       const res = await fetch(`/api/admin/media/${slot.key}`, {
         method: "POST",
         body: form,

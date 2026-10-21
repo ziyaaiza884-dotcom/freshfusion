@@ -6,7 +6,9 @@ import { Footer } from "@/components/footer";
 import { WhatsAppButton } from "@/components/whatsapp-button";
 import { PageTransition } from "@/components/page-transition";
 import { OfferStrip } from "@/components/home/offer-strip";
-import { getSettings } from "@/server/store";
+import { getProductPhotoIndex, getSettings } from "@/server/store";
+import { JsonLd } from "@/components/json-ld";
+import { organizationLd, websiteLd } from "@/lib/structured-data";
 import { getTheme, themeStyle } from "@/lib/themes";
 import { resolveActiveFestivalId } from "@/lib/festivals";
 
@@ -17,7 +19,10 @@ export default async function StoreLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { theme } = await getSettings();
+  const [{ theme }, photoIndex] = await Promise.all([
+    getSettings(),
+    getProductPhotoIndex(),
+  ]);
   // Site-wide theme: the admin's saved choice, or an auto-activated
   // festival if they've left it on "everyday" and today falls in that
   // festival's date window (see lib/festivals.ts).
@@ -30,9 +35,11 @@ export default async function StoreLayout({
       style={themeStyle(active.id)}
       className="flex min-h-screen flex-col bg-background text-foreground"
     >
+      <JsonLd data={organizationLd()} />
+      <JsonLd data={websiteLd()} />
       <CartProvider>
         <AuthProvider>
-          <ProductPhotosProvider>
+          <ProductPhotosProvider initialIndex={photoIndex}>
             <OfferStrip themeId={activeId} />
             <Header />
             <PageTransition>{children}</PageTransition>

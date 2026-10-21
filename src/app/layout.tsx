@@ -25,31 +25,22 @@ import "@fontsource/spectral/600.css";
 import "@fontsource/spectral/700.css";
 import "./globals.css";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
-const description =
-  "Small-batch home-cooked pickles and spices from a licensed family kitchen. Beef, fish and mango pickles, whole spices and ready-to-cook specialties, delivered fresh.";
+import { siteUrl } from "@/lib/site";
+import { pageMetadata } from "@/lib/seo";
+import { HOME_SEO } from "@/lib/seo.config";
 
-export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
-  title: {
-    default: "Fresh Fusion — Home-cooked flavours, delivered fresh",
-    template: "%s · Fresh Fusion",
-  },
-  description,
-  applicationName: "Fresh Fusion",
-  openGraph: {
-    type: "website",
-    siteName: "Fresh Fusion",
-    title: "Fresh Fusion — Home-cooked flavours, delivered fresh",
-    description,
-    url: siteUrl,
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Fresh Fusion",
-    description,
-  },
-};
+// Site-wide defaults. Public pages override all of this with their own
+// pageMetadata() from src/lib/seo.config.ts; the template only applies to
+// utility pages (cart, checkout, order) that set a plain title.
+export function generateMetadata(): Metadata {
+  return {
+    ...pageMetadata(HOME_SEO, "/"),
+    metadataBase: new URL(siteUrl()),
+    title: { default: HOME_SEO.title, template: "%s · Fresh Fusion" },
+    applicationName: "Fresh Fusion",
+    alternates: undefined,
+  };
+}
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (

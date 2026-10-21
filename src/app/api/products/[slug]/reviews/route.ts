@@ -38,7 +38,7 @@ export async function POST(
     });
     revalidatePath("/");
     revalidatePath("/shop");
-    revalidatePath(`/product/${slug}`);
+    revalidatePath(`/products/${slug}`);
     return NextResponse.json({ review }, { status: 201 });
   } catch (err) {
     if (err instanceof OrderError) {

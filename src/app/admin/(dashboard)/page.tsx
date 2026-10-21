@@ -110,7 +110,7 @@ export default async function AdminOverviewPage() {
               {o.topSkus.map((s, i) => (
                 <li key={s.slug}>
                   <Link
-                    href={`/product/${s.slug}`}
+                    href={`/products/${s.slug}`}
                     className="group flex items-center justify-between gap-3 rounded-md px-2 py-1.5 text-sm transition-colors hover:bg-surface-muted"
                   >
                     <span className="flex min-w-0 items-center gap-2.5">

@@ -169,7 +169,7 @@ function CartLineRow({ line }: { line: CartLine }) {
       className="flex gap-4 p-4"
     >
       <Link
-        href={`/product/${line.slug}`}
+        href={`/products/${line.slug}`}
         className="h-24 w-24 shrink-0 overflow-hidden rounded-lg border border-border"
       >
         <ProductPhoto
@@ -184,7 +184,7 @@ function CartLineRow({ line }: { line: CartLine }) {
         <div className="flex items-start justify-between gap-3">
           <div>
             <Link
-              href={`/product/${line.slug}`}
+              href={`/products/${line.slug}`}
               className="font-serif font-semibold hover:text-primary-strong"
             >
               {line.name}

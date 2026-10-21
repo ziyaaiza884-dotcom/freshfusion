@@ -2,17 +2,22 @@
 
 import { createContext, useContext, useEffect, useState } from "react";
 
-/** slug -> updatedAt (ms). Populated once from GET /api/product-photos. */
+/** slug -> updatedAt (ms). Seeded by the server, refreshed once from
+ *  GET /api/product-photos on mount. */
 type PhotoIndex = Record<string, number>;
 
 const ProductPhotosContext = createContext<PhotoIndex>({});
 
 export function ProductPhotosProvider({
   children,
+  initialIndex = {},
 }: {
   children: React.ReactNode;
+  /** server-provided index, so photos are in the first HTML (crawlers and
+   *  first paint see real images, not placeholder art) */
+  initialIndex?: PhotoIndex;
 }) {
-  const [index, setIndex] = useState<PhotoIndex>({});
+  const [index, setIndex] = useState<PhotoIndex>(initialIndex);
 
   useEffect(() => {
     let alive = true;

@@ -6,6 +6,17 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: __dirname,
   },
+  async redirects() {
+    return [
+      // product pages moved from /product/<slug> to /products/<slug>;
+      // permanent (308) so search engines carry rankings across
+      {
+        source: "/product/:slug",
+        destination: "/products/:slug",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

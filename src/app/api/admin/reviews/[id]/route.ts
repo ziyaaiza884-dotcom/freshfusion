@@ -9,7 +9,7 @@ async function revalidateFor(id: string) {
   const review = (await getReviews()).find((r) => r.id === id);
   revalidatePath("/");
   revalidatePath("/shop");
-  if (review) revalidatePath(`/product/${review.productSlug}`);
+  if (review) revalidatePath(`/products/${review.productSlug}`);
 }
 
 export async function PATCH(
@@ -34,7 +34,7 @@ export async function PATCH(
   try {
     await revalidateFor(id);
     const review = await setReviewHidden(id, body.hidden);
-    revalidatePath(`/product/${review.productSlug}`);
+    revalidatePath(`/products/${review.productSlug}`);
     return NextResponse.json({ review });
   } catch (err) {
     return NextResponse.json(

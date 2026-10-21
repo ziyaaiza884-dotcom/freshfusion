@@ -18,9 +18,13 @@ export async function compressImage(
   const ctx = canvas.getContext("2d");
   if (!ctx) throw new Error("Could not process image");
   ctx.drawImage(bitmap, 0, 0, w, h);
-  const blob = await new Promise<Blob | null>((resolve) =>
-    canvas.toBlob(resolve, "image/jpeg", quality),
-  );
+  const encode = (type: string) =>
+    new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, type, quality));
+  // WebP is ~25-35% smaller than JPEG at the same quality. Browsers that
+  // can't encode it silently hand back a PNG instead, so check and fall
+  // back to JPEG.
+  let blob = await encode("image/webp");
+  if (!blob || blob.type !== "image/webp") blob = await encode("image/jpeg");
   if (!blob) throw new Error("Could not process image");
   return blob;
 }

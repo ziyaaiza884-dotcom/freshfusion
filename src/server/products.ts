@@ -1,6 +1,11 @@
 import "server-only";
 import type { Product } from "@/data/types";
-import { getStoreProducts, type StoreProduct } from "./store";
+import { DEFAULT_OG_IMAGE } from "@/lib/seo";
+import {
+  getProductPhotoIndex,
+  getStoreProducts,
+  type StoreProduct,
+} from "./store";
 
 export const getAllProducts = (): Promise<StoreProduct[]> => getStoreProducts();
 
@@ -32,4 +37,14 @@ export async function getRelatedProducts(slug: string): Promise<Product[]> {
     (x) => x.slug !== slug && x.category === p.category && !picks.includes(x),
   );
   return [...picks, ...fillers].slice(0, 4);
+}
+
+/**
+ * Best image path for a product's share card / JSON-LD: its admin-uploaded
+ * photo if it has one, else the site's default share image.
+ */
+export async function getProductImagePath(slug: string): Promise<string> {
+  const index = await getProductPhotoIndex();
+  const v = index[slug];
+  return v ? `/api/media/product/${slug}/${v}` : DEFAULT_OG_IMAGE.url;
 }

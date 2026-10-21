@@ -2,7 +2,11 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ChevronRight, Leaf, Sprout } from "lucide-react";
-import { getProductBySlug, getRelatedProducts } from "@/server/products";
+import {
+  getProductBySlug,
+  getProductImagePath,
+  getRelatedProducts,
+} from "@/server/products";
 import { getReviewsForProduct } from "@/server/store";
 import { CATEGORY_LABELS, DIETARY_LABELS } from "@/data/types";
 import { formatDate, formatPrice, formatWeight } from "@/lib/format";
@@ -15,6 +19,11 @@ import { Badge } from "@/components/ui/badge";
 import { Stars } from "@/components/stars";
 import { Section, SectionHeading } from "@/components/section";
 import { Reveal } from "@/components/ui/motion";
+import { JsonLd } from "@/components/json-ld";
+import { pageMetadata } from "@/lib/seo";
+import { productImageAlt, productSeo } from "@/lib/seo.config";
+import { productBreadcrumbLd, productLd } from "@/lib/structured-data";
+import { categoryPath, productPath } from "@/lib/site";
 
 export const dynamic = "force-dynamic";
 
@@ -26,10 +35,11 @@ export async function generateMetadata({
   const { slug } = await params;
   const product = await getProductBySlug(slug);
   if (!product) return { title: "Not found" };
-  return {
-    title: product.name,
-    description: product.blurb,
-  };
+  const image = await getProductImagePath(slug);
+  return pageMetadata(productSeo(product), productPath(slug), {
+    url: image,
+    alt: productImageAlt(product),
+  });
 }
 
 export default async function ProductPage({ params }: RouteParams) {
@@ -37,20 +47,27 @@ export default async function ProductPage({ params }: RouteParams) {
   const product = await getProductBySlug(slug);
   if (!product) notFound();
 
-  const [related, reviews] = await Promise.all([
+  const [related, reviews, image] = await Promise.all([
     getRelatedProducts(slug),
     getReviewsForProduct(slug),
+    getProductImagePath(slug),
   ]);
+  const alt = productImageAlt(product);
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
-      <nav className="flex items-center gap-1.5 text-xs text-muted-foreground">
-        <Link href="/shop" className="hover:text-foreground">
-          Shop
+      <JsonLd data={productLd(product, image)} />
+      <JsonLd data={productBreadcrumbLd(product)} />
+      <nav
+        aria-label="Breadcrumb"
+        className="flex items-center gap-1.5 text-xs text-muted-foreground"
+      >
+        <Link href="/" className="hover:text-foreground">
+          Home
         </Link>
         <ChevronRight className="h-3.5 w-3.5" />
         <Link
-          href={`/shop?category=${product.category}`}
+          href={categoryPath(product.category)}
           className="hover:text-foreground"
         >
           {CATEGORY_LABELS[product.category]}
@@ -65,6 +82,7 @@ export default async function ProductPage({ params }: RouteParams) {
           art={product.art}
           category={product.category}
           name={product.name}
+          alt={alt}
         />
 
         <div>

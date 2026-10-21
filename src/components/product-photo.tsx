@@ -17,12 +17,15 @@ export function ProductPhoto({
   category,
   className,
   label,
+  alt,
 }: {
   slug: string;
   art: string;
   category: Category;
   className?: string;
   label?: string;
+  /** descriptive alt for the photo, e.g. "Kerala beef pickle in a 250 g glass jar" */
+  alt?: string;
 }) {
   const photo = useProductPhoto(slug);
 
@@ -36,7 +39,7 @@ export function ProductPhoto({
     <div className={cn("relative overflow-hidden rounded-[inherit]", className)}>
       <Image
         src={photo}
-        alt={label ?? `${category} product photo`}
+        alt={alt ?? label ?? `${category} product photo`}
         fill
         sizes="(max-width: 640px) 50vw, 320px"
         className={cn("object-cover", className)}
