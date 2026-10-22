@@ -205,7 +205,7 @@ export function BeefStory({ variants }: { variants: BeefVariant[] }) {
             .to(".ffs-outline path", { strokeDashoffset: 0, duration: 1, stagger: 0.12 }, 0)
             // 2. sketch becomes the real jar
             .to(".ffs-jar-closed", { opacity: 1, duration: 0.6 })
-            .to(".ffs-jar-sketch", { opacity: 0, duration: 0.6 }, "<.2")
+            .to(".ffs-jar-sketch, .ffs-sketch-logo", { opacity: 0, duration: 0.6 }, "<.2")
             .to(".ffs-note, .ffs-badge", { opacity: 0, duration: 0.3 }, "<.3")
             // 3. ticker
             .to(".ffs-ticker", { clipPath: "inset(0 0% 0 0)", duration: 0.6 })
@@ -406,6 +406,9 @@ export function BeefStory({ variants }: { variants: BeefVariant[] }) {
             ))}
           </g>
         </svg>
+        {/* brand mark in the sketch's label circle — same spot as the logo on
+            the real jar, so the sketch reads as the real jar arriving */}
+        <span className="ffs-sketch-logo ffs-logo-mark" aria-hidden="true" />
         {/* eslint-disable-next-line @next/next/no-img-element -- GSAP animates these layered stills directly */}
         <img className="ffs-jar-photo ffs-jar-closed" src={`${IMG}/jar-closed.webp`} alt="" width={585} height={979} />
         {/* eslint-disable-next-line @next/next/no-img-element */}
