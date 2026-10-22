@@ -329,31 +329,35 @@ export function BeefStory({ variants }: { variants: BeefVariant[] }) {
   return (
     <section ref={rootRef} className="ffs-stage" aria-label="Beef pickle story">
       <div className="ffs-hero-copy">
-        <h2>Beef pickle made with love, slow-roasted in coconut oil.</h2>
-        <p>Small batches, made the Kerala way. Scroll to see what goes in the jar.</p>
-        <div className="ffs-hero-actions">
-          <button type="button" className="ffs-hero-order" onClick={() => jumpToOrder.current()}>
-            Order now · from {formatPrice(fromPrice)}
-          </button>
-          <button
-            type="button"
-            className="ffs-hero-more"
-            onClick={() => window.scrollBy({ top: window.innerHeight * 0.9, behavior: "smooth" })}
-          >
-            See how it&apos;s made ↓
-          </button>
+        <div className="ffs-hero-text">
+          <h2>Beef pickle made with love, slow-roasted in coconut oil.</h2>
+          <p>Small batches, made the Kerala way. Scroll to see what goes in the jar.</p>
         </div>
-        <ul className="ffs-chips">
-          <li>
-            <Flame aria-hidden /> Small batches
-          </li>
-          <li>
-            <ShieldCheck aria-hidden /> FSSAI-approved
-          </li>
-          <li>
-            <PackageCheck aria-hidden /> Packed in 48h
-          </li>
-        </ul>
+        <div className="ffs-hero-below">
+          <div className="ffs-hero-actions">
+            <button type="button" className="ffs-hero-order" onClick={() => jumpToOrder.current()}>
+              Order now · from {formatPrice(fromPrice)}
+            </button>
+            <button
+              type="button"
+              className="ffs-hero-more"
+              onClick={() => window.scrollBy({ top: window.innerHeight * 0.9, behavior: "smooth" })}
+            >
+              See how it&apos;s made ↓
+            </button>
+          </div>
+          <ul className="ffs-chips">
+            <li>
+              <Flame aria-hidden /> Small batches
+            </li>
+            <li>
+              <ShieldCheck aria-hidden /> FSSAI-approved
+            </li>
+            <li>
+              <PackageCheck aria-hidden /> Packed in 48h
+            </li>
+          </ul>
+        </div>
       </div>
 
       <div className="ffs-note ffs-ml" aria-hidden="true">
