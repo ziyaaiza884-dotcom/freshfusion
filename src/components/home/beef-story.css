@@ -75,6 +75,17 @@
 .ffs-hint{position:absolute;bottom:3vh;left:50%;transform:translateX(-50%);font-size:13px;font-weight:600;color:var(--ffs-muted);z-index:12}
 
 
+/* trust points between the turning jar and the order card (final screen) */
+.ffs-points{display:none;list-style:none;margin:0;padding:0;position:absolute;left:calc(50% - 167px);top:50%;transform:translateY(-50%);width:240px;z-index:24;gap:22px}
+.ffs-point{display:flex;align-items:flex-start;gap:12px;opacity:0;transform:translateY(16px);font-size:15px;line-height:1.35;color:var(--ffs-muted)}
+.ffs-point b{display:block;color:var(--ffs-ink);font-weight:800;font-size:16px}
+.ffs-point svg{flex:none;width:22px;height:22px;margin-top:2px;color:var(--ffs-chilli)}
+/* wide screens: jar | points | card grouped in the centre (GROUPED_MIN in beef-story.tsx) */
+@media (min-width:1180px){
+  .ffs-points{display:grid}
+  .ffs-cta{right:auto;left:calc(50% + 113px)}
+}
+
 /* tablets: too narrow for text beside the jar, so stack it above */
 @media (min-width:760px) and (max-width:1023px){
   .ffs-hero-copy{left:8vw;right:8vw;top:7%;width:auto;max-width:none;transform:none;text-align:center}
@@ -107,5 +118,8 @@
 .ffs-static .ffs-hero-copy{opacity:1}
 .ffs-static .ffs-panel,.ffs-static .ffs-brand,.ffs-static .ffs-ing,.ffs-static .ffs-note,.ffs-static .ffs-hint{display:none}
 .ffs-static .ffs-cta{opacity:1}
+.ffs-static .ffs-point{opacity:1;transform:none}
 @media (min-width:760px){.ffs-static .ffs-jar{left:46%}}
+/* wide static view = the final screen: jar | points | card, no headline/ticker */
+@media (min-width:1180px){.ffs-static .ffs-jar{left:calc(50% - 207px - min(27vw,19vh))}.ffs-static .ffs-hero-copy,.ffs-static .ffs-ticker{display:none}}
 @media (max-width:759px){.ffs-static .ffs-stage{min-height:900px}.ffs-static .ffs-jar{top:42%}.ffs-static .ffs-cta{transform:translateX(-50%)}}

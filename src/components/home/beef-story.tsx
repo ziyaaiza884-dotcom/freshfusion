@@ -12,7 +12,8 @@ import "./beef-story.css";
 import type { Product } from "@/data/types";
 import { useCart } from "@/context/cart-context";
 import { shopOrderWhatsAppUrl } from "@/lib/contact";
-import { formatPrice } from "@/lib/format";
+import { CalendarDays, Flame, PackageCheck, ShieldCheck } from "lucide-react";
+import { formatDate, formatPrice } from "@/lib/format";
 
 /**
  * Cinematic scroll story for the beef pickle, pinned at the top of the home
@@ -64,6 +65,13 @@ const JAR_PATHS = [
 ];
 
 const WORDMARK = "FRESH FUSION".split("");
+
+/** at this width and up the final screen is jar | trust points | order card,
+ *  grouped in the centre (keep in sync with beef-story.css) */
+const GROUPED_MIN = 1180;
+/** trust points column: left edge relative to the centre, and the gap to the jar */
+const POINTS_LEFT = -167;
+const GROUP_GAP = 40;
 
 export function BeefStory({ variants }: { variants: BeefVariant[] }) {
   const rootRef = useRef<HTMLElement>(null);
@@ -153,10 +161,12 @@ export function BeefStory({ variants }: { variants: BeefVariant[] }) {
             frames = SPIN.map((src) => {
               const im = new Image();
               im.decoding = "async";
+              // redraw as frames arrive, so landing mid-story (refresh,
+              // fast scroll) still shows the jar once its frame is in
+              im.onload = draw;
               im.src = src;
               return im;
             });
-            frames[0].onload = draw;
           };
 
           gsap.set(jar, { xPercent: -50, yPercent: -50, x: 0, y: 0 });
@@ -265,7 +275,15 @@ export function BeefStory({ variants }: { variants: BeefVariant[] }) {
             .to(".ffs-panel", { yPercent: -100, duration: 0.6 }, "<")
             .set(
               ".ffs-spin",
-              narrow ? { x: 0, y: () => -H() * 0.2, scale: 0.62 } : { x: () => -W() * 0.18, y: 0, scale: 1 },
+              narrow
+                ? { x: 0, y: () => -H() * 0.2, scale: 0.62 }
+                : {
+                    // grouped: jar sits just left of the trust points
+                    x: () =>
+                      W() >= GROUPED_MIN ? POINTS_LEFT - GROUP_GAP - cv.offsetWidth / 2 : -W() * 0.18,
+                    y: 0,
+                    scale: 1,
+                  },
               "<",
             )
             .to(".ffs-spin", { opacity: 1, duration: 0.4 }, "<.2")
@@ -275,6 +293,7 @@ export function BeefStory({ variants }: { variants: BeefVariant[] }) {
               "<",
             )
             .to(spin, { f: SPIN.length - 1, duration: 1.6, onUpdate: draw }, "<")
+            .to(".ffs-point", { opacity: 1, y: 0, duration: 0.35, stagger: 0.25 }, "<.3")
             .to({}, { duration: 0.3 });
         },
       );
@@ -398,6 +417,33 @@ export function BeefStory({ variants }: { variants: BeefVariant[] }) {
           <div className="ffs-brand-ml ffs-ml">ബീഫ് അച്ചാർ</div>
         </div>
       </div>
+
+      <ul className="ffs-points">
+        <li className="ffs-point">
+          <Flame aria-hidden />
+          <span>
+            <b>Slow-roasted</b> in small batches
+          </span>
+        </li>
+        <li className="ffs-point">
+          <ShieldCheck aria-hidden />
+          <span>
+            <b>FSSAI-approved</b> family kitchen
+          </span>
+        </li>
+        <li className="ffs-point">
+          <PackageCheck aria-hidden />
+          <span>
+            <b>Packed fresh</b> within 48 hours
+          </span>
+        </li>
+        <li className="ffs-point">
+          <CalendarDays aria-hidden />
+          <span>
+            <b>Last batch cooked</b> {formatDate(current.product.madeOn)}
+          </span>
+        </li>
+      </ul>
 
       <div className="ffs-cta">
         <div className="ffs-cta-head">
