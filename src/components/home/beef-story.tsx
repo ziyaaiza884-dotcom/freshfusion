@@ -81,6 +81,13 @@ export function BeefStory({ variants }: { variants: BeefVariant[] }) {
     return i >= 0 ? i : 0;
   });
   const [added, setAdded] = useState(false);
+  // "Order now" jumps to the order card at the end of the story; the
+  // effect swaps in a scroll-to-end-of-pin version once GSAP is running
+  const jumpToOrder = useRef(() => {
+    rootRef.current?.querySelector(".ffs-cta")?.scrollIntoView({ behavior: "smooth", block: "center" });
+  });
+  const fromPrice = Math.min(...variants.map((v) => v.product.price));
+  const fromLabel = variants.find((v) => v.product.price === fromPrice)?.label;
 
   const current = variants[selected];
   const inStock = current.product.inStock;
@@ -196,11 +203,10 @@ export function BeefStory({ variants }: { variants: BeefVariant[] }) {
           // 1. sketch draws itself
           tl.to(".ffs-hint", { opacity: 0, duration: 0.2 })
             .to(".ffs-outline path", { strokeDashoffset: 0, duration: 1, stagger: 0.12 }, 0)
-            .to(".ffs-note", { opacity: 1, y: 0, duration: 0.4 }, 0.4)
             // 2. sketch becomes the real jar
             .to(".ffs-jar-closed", { opacity: 1, duration: 0.6 })
             .to(".ffs-jar-sketch", { opacity: 0, duration: 0.6 }, "<.2")
-            .to(".ffs-note", { opacity: 0, duration: 0.3 }, "<.3")
+            .to(".ffs-note, .ffs-badge", { opacity: 0, duration: 0.3 }, "<.3")
             // 3. ticker
             .to(".ffs-ticker", { clipPath: "inset(0 0% 0 0)", duration: 0.6 })
             .to({}, { duration: 0.3 })
@@ -217,7 +223,7 @@ export function BeefStory({ variants }: { variants: BeefVariant[] }) {
             .to(".ffs-lid-tilt", { opacity: 1, duration: 0.2 }, "<.15")
             .to(".ffs-lid-flat", { opacity: 0, duration: 0.2 }, "<")
             // headline steps aside so the flying ingredients never land on it
-            .to(".ffs-hero-copy", { opacity: 0, duration: 0.3 }, "<")
+            .to(".ffs-hero-copy", { autoAlpha: 0, duration: 0.3 }, "<")
             .to(
               ".ffs-ing",
               {
@@ -251,7 +257,7 @@ export function BeefStory({ variants }: { variants: BeefVariant[] }) {
             .set(".ffs-jar-closed", { opacity: 1 })
             .set(".ffs-jar-open", { opacity: 0 })
             .set(".ffs-lid-wrap", { opacity: 0 })
-            .to(".ffs-ticker, .ffs-hero-copy", { opacity: 0, duration: 0.3 }, "<")
+            .to(".ffs-ticker, .ffs-hero-copy", { autoAlpha: 0, duration: 0.3 }, "<")
             // 6. process panel
             .to(".ffs-panel", narrow ? { yPercent: 0, duration: 0.6 } : { xPercent: 0, duration: 0.6 })
             .to(
@@ -289,12 +295,22 @@ export function BeefStory({ variants }: { variants: BeefVariant[] }) {
             .to(".ffs-spin", { opacity: 1, duration: 0.4 }, "<.2")
             .to(
               ".ffs-cta",
-              narrow ? { opacity: 1, y: -20, duration: 0.5 } : { opacity: 1, yPercent: -50, y: 0, duration: 0.5 },
+              narrow ? { autoAlpha: 1, y: -20, duration: 0.5 } : { autoAlpha: 1, yPercent: -50, y: 0, duration: 0.5 },
               "<",
             )
             .to(spin, { f: SPIN.length - 1, duration: 1.6, onUpdate: draw }, "<")
             .to(".ffs-point", { opacity: 1, y: 0, duration: 0.35, stagger: 0.25 }, "<.3")
             .to({}, { duration: 0.3 });
+
+          const fallback = jumpToOrder.current;
+          jumpToOrder.current = () => {
+            const end = tl.scrollTrigger?.end;
+            if (end) window.scrollTo({ top: end, behavior: "smooth" });
+            else fallback();
+          };
+          return () => {
+            jumpToOrder.current = fallback;
+          };
         },
       );
 
@@ -315,10 +331,38 @@ export function BeefStory({ variants }: { variants: BeefVariant[] }) {
       <div className="ffs-hero-copy">
         <h2>Beef pickle made with love, slow-roasted in coconut oil.</h2>
         <p>Small batches, made the Kerala way. Scroll to see what goes in the jar.</p>
+        <div className="ffs-hero-actions">
+          <button type="button" className="ffs-hero-order" onClick={() => jumpToOrder.current()}>
+            Order now · from {formatPrice(fromPrice)}
+          </button>
+          <button
+            type="button"
+            className="ffs-hero-more"
+            onClick={() => window.scrollBy({ top: window.innerHeight * 0.9, behavior: "smooth" })}
+          >
+            See how it&apos;s made ↓
+          </button>
+        </div>
+        <ul className="ffs-chips">
+          <li>
+            <Flame aria-hidden /> Small batches
+          </li>
+          <li>
+            <ShieldCheck aria-hidden /> FSSAI-approved
+          </li>
+          <li>
+            <PackageCheck aria-hidden /> Packed in 48h
+          </li>
+        </ul>
       </div>
 
       <div className="ffs-note ffs-ml" aria-hidden="true">
         സ്നേഹത്തോടെ<small>Made with love</small>
+      </div>
+      <div className="ffs-badge" aria-hidden="true">
+        <small>From</small>
+        <b>{formatPrice(fromPrice)}</b>
+        <small>{fromLabel} jar</small>
       </div>
 
       <div className="ffs-ticker" aria-hidden="true">
