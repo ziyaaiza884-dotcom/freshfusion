@@ -51,6 +51,15 @@ describe("seo copy", () => {
     expect(seo.description.length).toBeLessThanOrEqual(160);
   });
 
+  it("drops hand-written copy when the admin renamed the product in place", () => {
+    const renamed = productSeo({ slug: "fish-pickle", name: "Beef pickle  500g", category: "pickles" });
+    expect(renamed.title).not.toMatch(/fish/i);
+    expect(renamed.title).toContain("500g");
+    const sized = productSeo({ slug: "beef-pickle", name: "Beef Pickle  250g", category: "pickles" });
+    expect(sized.title).toBe(PRODUCT_SEO["beef-pickle"].title);
+    expectGoodCopy([["renamed", renamed]]);
+  });
+
   it("builds descriptive alt text", () => {
     expect(
       productImageAlt({ name: "Beef Pickle", category: "pickles", weight: 250, unit: "g" }),

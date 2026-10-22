@@ -9,6 +9,7 @@
  *  - only mention things the shop actually sells
  */
 import type { Category, Product } from "@/data/types";
+import { products as catalogProducts } from "@/data/catalog";
 
 export const BRAND = "Fresh Fusion";
 
@@ -283,10 +284,16 @@ const CATEGORY_TAIL: Record<Category, string[]> = {
 };
 
 export function productSeo(p: Pick<Product, "slug" | "name" | "category">): PageSeo {
+  // hand-written copy only while the product is still what it was written
+  // for — the admin can rename a product in place (e.g. "Fish Pickle" →
+  // "Beef pickle 500g"), and a fish-pickle title on a beef page is worse
+  // than the template
   const hand = PRODUCT_SEO[p.slug];
-  if (hand) return hand;
+  const written = catalogProducts.find((c) => c.slug === p.slug);
+  if (hand && written && shortName(written.name) === shortName(p.name)) return hand;
 
-  const name = shortName(p.name);
+  // keep any pack size typed into the name so size variants get distinct titles
+  const name = cleanName(p.name.replace(/\s*\([^)]*\)/g, ""));
   const kerala = /kerala/i.test(name) ? name : `Kerala ${name}`;
   const label =
     p.category === "pickles" ? "Home-made" : p.category === "spices" ? "Spice Pack" : "Fresh Fusion";

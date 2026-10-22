@@ -33,11 +33,12 @@ export function Header() {
           className="flex items-center gap-2 font-serif text-lg font-bold text-primary-strong"
         >
           <Image
-            src="/images/logo.jpeg"
+            src="/images/logo.webp"
             alt="Fresh Fusion Spices & Pickles"
-            width={36}
-            height={36}
-            className="h-9 w-9 shrink-0 rounded-full object-cover"
+            width={38}
+            height={38}
+            priority
+            className="h-[38px] w-[38px] shrink-0 rounded-full object-contain"
           />
           Fresh&nbsp;Fusion
         </Link>

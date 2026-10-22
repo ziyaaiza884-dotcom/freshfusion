@@ -14,11 +14,11 @@ export function Footer() {
         <div>
           <div className="flex items-center gap-2 font-serif text-lg font-bold text-primary-strong">
             <Image
-              src="/images/logo.jpeg"
+              src="/images/logo.webp"
               alt="Fresh Fusion Spices & Pickles"
               width={32}
               height={32}
-              className="h-8 w-8 shrink-0 rounded-full object-cover"
+              className="h-8 w-8 shrink-0 rounded-full object-contain"
             />
             Fresh Fusion
           </div>

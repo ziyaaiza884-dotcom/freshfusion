@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
+import { preload } from "react-dom";
 import {
   getAllProducts,
   getBestSellers,
@@ -7,7 +8,9 @@ import {
 } from "@/server/products";
 import { getMedia, getSettings } from "@/server/store";
 import { MEDIA_SLOTS, mediaSrc } from "@/lib/media";
-import { resolveActiveFestivalId } from "@/lib/festivals";
+import { festivalFor, resolveActiveFestivalId } from "@/lib/festivals";
+import { BEEF_STORY_HIDDEN_ON, beefVariants } from "@/lib/beef-story";
+import { BeefStory } from "@/components/home/beef-story";
 import { Hero } from "@/components/home/hero";
 import { Testimonials } from "@/components/home/testimonials";
 import { TrustBadges } from "@/components/trust-badges";
@@ -23,7 +26,11 @@ export function generateMetadata(): Metadata {
   return pageMetadata(HOME_SEO, "/");
 }
 
-export default async function HomePage() {
+export default async function HomePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ theme?: string }>;
+}) {
   const [all, best, fresh, media, settings] = await Promise.all([
     getAllProducts(),
     getBestSellers(),
@@ -43,8 +50,18 @@ export default async function HomePage() {
 
   const activeFestivalId = resolveActiveFestivalId(settings.theme);
 
+  // the beef story is non-veg, so it stays off on veg-only festival themes —
+  // including the homepage's ?theme= preview, which the hero also honours
+  const { theme: preview } = await searchParams;
+  const shownTheme = preview && festivalFor(preview) ? preview : activeFestivalId;
+  const beef = BEEF_STORY_HIDDEN_ON.includes(shownTheme) ? [] : beefVariants(all);
+  if (beef.length) {
+    preload("/scroll-story/img/jar-closed.webp", { as: "image", fetchPriority: "high" });
+  }
+
   return (
     <>
+      {beef.length > 0 && <BeefStory variants={beef} />}
       <Suspense fallback={null}>
         <Hero
           heroSrc={heroSrc}
