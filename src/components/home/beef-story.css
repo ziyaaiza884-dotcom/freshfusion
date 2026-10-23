@@ -53,10 +53,11 @@
 .ffs-ing-label .ffs-ml{display:block;font-size:12px;color:var(--ffs-muted);font-weight:500}
 
 .ffs-panel{position:absolute;top:0;right:0;width:56%;height:100%;background:var(--ffs-chilli);color:var(--ffs-on-red);z-index:8;display:flex;align-items:center;transform:translateX(100%)}
-.ffs-steps{list-style:none;margin:0;padding:0 7vw 0 6vw;display:grid;gap:clamp(18px,4vh,40px);counter-reset:s}
-.ffs-steps{flex:1;min-width:0}
+.ffs-steps{list-style:none;margin:0;padding:0 0 0 6vw;display:grid;gap:clamp(18px,4vh,40px);counter-reset:s}
+/* steps take only their text width so the logo sits close beside them */
+.ffs-steps{flex:0 1 auto;min-width:0}
 /* animated logo on the right of the red process panel */
-.ffs-panel-mark{flex:none;position:relative;width:clamp(96px,11vw,190px);aspect-ratio:1;margin-right:6%;opacity:0}
+.ffs-panel-mark{flex:none;position:relative;width:clamp(96px,11vw,190px);aspect-ratio:1;margin:0 4vw 0 clamp(32px,4vw,64px);opacity:0}
 .ffs-panel-mark::before{content:"";position:absolute;inset:-14%;border-radius:50%;border:2px dashed color-mix(in srgb,var(--ffs-on-red) 55%,transparent);animation:ffs-spin 18s linear infinite}
 .ffs-panel-mark .ffs-logo-mark{position:absolute;inset:0;box-shadow:0 18px 36px -14px rgba(0,0,0,.45);animation:ffs-float 4s ease-in-out infinite}
 @keyframes ffs-spin{to{transform:rotate(360deg)}}
