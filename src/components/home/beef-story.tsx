@@ -265,10 +265,16 @@ export function BeefStory({ variants }: { variants: BeefVariant[] }) {
               narrow ? { y: () => -H() * 0.27, scale: 0.62, duration: 0.6 } : { x: () => -W() * 0.27, duration: 0.6 },
               "<",
             )
-            .to(".ffs-step", { opacity: 1, y: 0, duration: 0.35, stagger: 0.3 })
+            .fromTo(
+              ".ffs-panel-mark",
+              { scale: 0, rotation: -140, opacity: 0 },
+              { scale: 1, rotation: 0, opacity: 1, duration: 0.5, ease: "back.out(1.5)" },
+              "-=.25",
+            )
+            .to(".ffs-step", { opacity: 1, y: 0, duration: 0.35, stagger: 0.3 }, "<.1")
             .to({}, { duration: 0.5 })
             // 7. brand reveal
-            .to(".ffs-step", { opacity: 0, duration: 0.25 })
+            .to(".ffs-step, .ffs-panel-mark", { opacity: 0, duration: 0.25 })
             .to(".ffs-panel", narrow ? { height: "100%", duration: 0.5 } : { width: "100%", duration: 0.5 }, "<")
             .to(jar, { opacity: 0, scale: narrow ? 0.5 : 0.85, duration: 0.4 }, "<")
             .to(".ffs-brand-line", { scaleY: 1, duration: 0.4 })
@@ -454,6 +460,11 @@ export function BeefStory({ variants }: { variants: BeefVariant[] }) {
             <p>Kashmiri chilli, garlic, ginger, curry leaves and vinegar.</p>
           </li>
         </ol>
+        {/* brand mark beside the steps: spins in with the panel, then floats
+            inside a slowly turning ring (CSS) */}
+        <div className="ffs-panel-mark" aria-hidden="true">
+          <span className="ffs-logo-mark" />
+        </div>
       </div>
 
       <div className="ffs-brand" aria-hidden="true">

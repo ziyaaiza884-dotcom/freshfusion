@@ -11,6 +11,7 @@ import { MEDIA_SLOTS, mediaSrc } from "@/lib/media";
 import { festivalFor, resolveActiveFestivalId } from "@/lib/festivals";
 import { BEEF_STORY_HIDDEN_ON, beefVariants } from "@/lib/beef-story";
 import { BeefStory } from "@/components/home/beef-story";
+import { RedThread } from "@/components/home/red-thread";
 import { Hero } from "@/components/home/hero";
 import { Testimonials } from "@/components/home/testimonials";
 import { TrustBadges } from "@/components/trust-badges";
@@ -62,6 +63,8 @@ export default async function HomePage({
   return (
     <>
       {beef.length > 0 && <BeefStory variants={beef} />}
+      {/* carries the story's red down the page; needs the story to start from */}
+      {beef.length > 0 && <RedThread />}
       <Suspense fallback={null}>
         <Hero
           heroSrc={heroSrc}
